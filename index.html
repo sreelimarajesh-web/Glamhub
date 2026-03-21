@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salon Booking Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Salon</h1>
+        <p>Book your appointment now!</p>
+    </header>
+    <main>
+        <form id="booking-form">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Your Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="date">Appointment Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="time">Appointment Time:</label>
+            <input type="time" id="time" name="time" required>
+
+            <label for="service">Select a Service:</label>
+            <select id="service" name="service" required>
+                <option value="haircut">Haircut</option>
+                <option value="manicure">Manicure</option>
+                <option value="facial">Facial</option>
+                <option value="massage">Massage</option>
+            </select>
+
+            <button type="submit">Book Appointment</button>
+        </form>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
