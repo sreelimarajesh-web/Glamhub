@@ -1,58 +1,92 @@
-// Booking Application Logic
+const bookingForm = document.getElementById('booking-form');
+const bookingsList = document.getElementById('bookings-list');
+const successMessage = document.getElementById('success-message');
+const errorMessage = document.getElementById('error-message');
+const dateInput = document.getElementById('date');
 
-class Booking {
-    constructor() {
-        this.bookings = [];
-    }
+const STORAGE_KEY = 'glamhub_bookings';
 
-    // Method to create a new booking
-    createBooking(customerName, date, time, service) {
-        const booking = {
-            id: this.bookings.length + 1,
-            customerName,
-            date,
-            time,
-            service,
-            status: 'confirmed'
-        };
-        this.bookings.push(booking);
-        return booking;
-    }
-
-    // Method to cancel a booking
-    cancelBooking(bookingId) {
-        const bookingIndex = this.bookings.findIndex(b => b.id === bookingId);
-        if (bookingIndex !== -1) {
-            this.bookings[bookingIndex].status = 'canceled';
-            return this.bookings[bookingIndex];
-        }
-        return null;
-    }
-
-    // Method to list all bookings
-    listBookings() {
-        return this.bookings;
-    }
-
-    // Method to get a specific booking
-    getBookingDetails(bookingId) {
-        return this.bookings.find(b => b.id === bookingId) || null;
-    }
+function getBookings() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
 }
 
-// Usage
-const bookingApp = new Booking();
+function saveBookings(bookings) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
+}
 
-// Create new bookings
-bookingApp.createBooking('John Doe', '2026-03-25', '10:00', 'Haircut');
-bookingApp.createBooking('Jane Smith', '2026-03-25', '11:00', 'Facial');
+function formatDate(isoDate) {
+    return new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
 
-// List all bookings
-console.log(bookingApp.listBookings());
+function showMessage(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
 
-// Get details of a specific booking
-console.log(bookingApp.getBookingDetails(1));
+    setTimeout(() => {
+        element.style.display = 'none';
+    }, 3500);
+}
 
-// Cancel a booking
-console.log(bookingApp.cancelBooking(1));
-console.log(bookingApp.listBookings());
+function renderBookings() {
+    const bookings = getBookings();
+
+    if (!bookings.length) {
+        bookingsList.innerHTML = '<p>No bookings yet. Your confirmed appointments will appear here.</p>';
+        return;
+    }
+
+    bookingsList.innerHTML = bookings
+        .map((booking) => `
+            <article class="booking-item">
+                <h4>${booking.name} · ${booking.service}</h4>
+                <p>${formatDate(booking.date)} at ${booking.time}</p>
+                <p>${booking.email}</p>
+            </article>
+        `)
+        .join('');
+}
+
+function setMinimumDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    dateInput.min = `${year}-${month}-${day}`;
+}
+
+bookingForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(bookingForm);
+    const booking = {
+        name: formData.get('name')?.trim(),
+        email: formData.get('email')?.trim(),
+        date: formData.get('date'),
+        time: formData.get('time'),
+        service: formData.get('service'),
+        notes: formData.get('notes')?.trim() || ''
+    };
+
+    if (!booking.name || !booking.email || !booking.date || !booking.time || !booking.service) {
+        showMessage(errorMessage, 'Please complete all required booking details.');
+        return;
+    }
+
+    const bookings = getBookings();
+    bookings.unshift(booking);
+    saveBookings(bookings);
+
+    bookingForm.reset();
+    setMinimumDate();
+    renderBookings();
+    showMessage(successMessage, `Thanks ${booking.name}! Your ${booking.service} appointment is confirmed.`);
+});
+
+setMinimumDate();
+renderBookings();
