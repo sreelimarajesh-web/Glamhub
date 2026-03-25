@@ -10,11 +10,12 @@
    ```bash
    cp .env.example .env
    ```
-3. Start the app:
+3. Edit `.env` and set `MONGODB_URI` to your private MongoDB connection string.
+4. Start the app:
    ```bash
    npm start
    ```
-4. Open `http://localhost:3000`.
+5. Open `http://localhost:3000`.
 
 ## MongoDB storage
 
@@ -24,6 +25,7 @@
   - `x-admin-username`
   - `x-admin-password`
 
-## Configured MongoDB URL
+## Security
 
-The provided MongoDB URL has been configured in `.env` with the password safely URL-encoded (`@` → `%40`).
+- Never commit `.env` with real credentials.
+- `.env` is gitignored; use `.env.example` as a template.
