@@ -54,11 +54,25 @@ function renderBookings() {
         .map((booking) => `
             <article class="booking-item">
                 <h4>${booking.name} · ${booking.service}</h4>
-                <p>${formatDate(booking.date)} at ${booking.time}</p>
+                <p>${formatDate(booking.date)} at ${formatTime(booking.time)}</p>
                 <p>${booking.email}</p>
             </article>
         `)
         .join('');
+}
+
+function formatTime(time24) {
+    const [hoursString, minutesString] = time24.split(':');
+    const hours = Number(hoursString);
+    const minutes = Number(minutesString);
+
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+        return time24;
+    }
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = (hours % 12) || 12;
+    return `${hours12}:${String(minutes).padStart(2, '0')} ${period}`;
 }
 
 function isAdminLoggedIn() {
@@ -109,6 +123,31 @@ function isValidThirtyMinuteSlot(time) {
     }
 
     return minutes === 0 || minutes === 30;
+}
+
+function populateTimeSlots() {
+    const openingHour = 9;
+    const closingHour = 20;
+    const timeOptions = [];
+
+    for (let hour = openingHour; hour <= closingHour; hour += 1) {
+        for (const minute of [0, 30]) {
+            if (hour === closingHour && minute === 30) {
+                continue;
+            }
+
+            const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+            timeOptions.push({
+                value,
+                label: formatTime(value)
+            });
+        }
+    }
+
+    timeInput.innerHTML = `
+        <option value="" disabled selected>Select a time slot</option>
+        ${timeOptions.map((slot) => `<option value="${slot.value}">${slot.label}</option>`).join('')}
+    `;
 }
 
 bookingForm.addEventListener('submit', (event) => {
@@ -175,6 +214,6 @@ adminLogoutButton.addEventListener('click', () => {
 });
 
 setMinimumDate();
-timeInput.step = 1800;
+populateTimeSlots();
 renderBookings();
 updateAdminView();
