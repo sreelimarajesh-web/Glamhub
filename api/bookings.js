@@ -27,12 +27,33 @@ function isAuthorizedAdmin(req) {
     return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
 
+function parseJsonBody(body) {
+    if (!body) {
+        return {};
+    }
+
+    if (typeof body === 'string') {
+        return JSON.parse(body);
+    }
+
+    if (Buffer.isBuffer(body)) {
+        return JSON.parse(body.toString('utf8'));
+    }
+
+    if (typeof body === 'object') {
+        return body;
+    }
+
+    return {};
+}
+
 module.exports = async (req, res) => {
     await connectToDatabase();
 
     if (req.method === 'POST') {
         try {
-            const { name, email, date, time, service, notes = '' } = req.body || {};
+            const payload = parseJsonBody(req.body);
+            const { name, email, date, time, service, notes = '' } = payload;
 
             if (!name || !email || !date || !time || !service) {
                 return res.status(400).json({ error: 'Please complete all required booking details.' });
@@ -57,6 +78,9 @@ module.exports = async (req, res) => {
 
             return res.status(201).json(booking);
         } catch (error) {
+            if (error instanceof SyntaxError) {
+                return res.status(400).json({ error: 'Invalid booking payload. Please refresh and try again.' });
+            }
             return res.status(500).json({ error: 'Unable to save booking right now.' });
         }
     }
