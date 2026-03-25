@@ -29,3 +29,12 @@
 
 - Never commit `.env` with real credentials.
 - `.env` is gitignored; use `.env.example` as a template.
+
+## Vercel deployment notes
+
+- Add `MONGODB_URI`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD` in your Vercel Project Settings → Environment Variables.
+- API routes are serverless under:
+  - `POST /api/bookings`
+  - `GET /api/bookings`
+  - `GET /api/health`
+- MongoDB connection is established from environment variables on each serverless runtime and re-used when possible.
