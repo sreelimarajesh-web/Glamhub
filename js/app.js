@@ -3,6 +3,7 @@ const bookingsList = document.getElementById('bookings-list');
 const successMessage = document.getElementById('success-message');
 const errorMessage = document.getElementById('error-message');
 const dateInput = document.getElementById('date');
+const timeInput = document.getElementById('time');
 const adminLoginForm = document.getElementById('admin-login-form');
 const adminBookingsPanel = document.getElementById('admin-bookings-panel');
 const adminSuccessMessage = document.getElementById('admin-success-message');
@@ -77,10 +78,37 @@ function updateAdminView() {
 
 function setMinimumDate() {
     const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    dateInput.min = `${year}-${month}-${day}`;
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 7);
+
+    const formatAsInputDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    dateInput.min = formatAsInputDate(today);
+    dateInput.max = formatAsInputDate(maxDate);
+}
+
+function isWithinBookingWindow(isoDate) {
+    const selected = new Date(`${isoDate}T00:00:00`);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 7);
+    return selected >= today && selected <= maxDate;
+}
+
+function isValidThirtyMinuteSlot(time) {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+        return false;
+    }
+
+    return minutes === 0 || minutes === 30;
 }
 
 bookingForm.addEventListener('submit', (event) => {
@@ -98,6 +126,16 @@ bookingForm.addEventListener('submit', (event) => {
 
     if (!booking.name || !booking.email || !booking.date || !booking.time || !booking.service) {
         showMessage(errorMessage, 'Please complete all required booking details.');
+        return;
+    }
+
+    if (!isWithinBookingWindow(booking.date)) {
+        showMessage(errorMessage, 'Bookings can only be made from today up to the next 7 days.');
+        return;
+    }
+
+    if (!isValidThirtyMinuteSlot(booking.time)) {
+        showMessage(errorMessage, 'Please select a time in 30-minute intervals.');
         return;
     }
 
@@ -137,5 +175,6 @@ adminLogoutButton.addEventListener('click', () => {
 });
 
 setMinimumDate();
+timeInput.step = 1800;
 renderBookings();
 updateAdminView();
