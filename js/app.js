@@ -3,8 +3,16 @@ const bookingsList = document.getElementById('bookings-list');
 const successMessage = document.getElementById('success-message');
 const errorMessage = document.getElementById('error-message');
 const dateInput = document.getElementById('date');
+const adminLoginForm = document.getElementById('admin-login-form');
+const adminBookingsPanel = document.getElementById('admin-bookings-panel');
+const adminSuccessMessage = document.getElementById('admin-success-message');
+const adminErrorMessage = document.getElementById('admin-error-message');
+const adminLogoutButton = document.getElementById('admin-logout-button');
 
 const STORAGE_KEY = 'glamhub_bookings';
+const ADMIN_SESSION_KEY = 'glamhub_admin_logged_in';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'adminhub';
 
 function getBookings() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -52,6 +60,21 @@ function renderBookings() {
         .join('');
 }
 
+function isAdminLoggedIn() {
+    return localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+}
+
+function setAdminSession(isLoggedIn) {
+    localStorage.setItem(ADMIN_SESSION_KEY, isLoggedIn ? 'true' : 'false');
+}
+
+function updateAdminView() {
+    const loggedIn = isAdminLoggedIn();
+
+    adminLoginForm.style.display = loggedIn ? 'none' : 'grid';
+    adminBookingsPanel.style.display = loggedIn ? 'block' : 'none';
+}
+
 function setMinimumDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -88,5 +111,31 @@ bookingForm.addEventListener('submit', (event) => {
     showMessage(successMessage, `Thanks ${booking.name}! Your ${booking.service} appointment is confirmed.`);
 });
 
+adminLoginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(adminLoginForm);
+    const username = formData.get('username')?.trim();
+    const password = formData.get('password');
+
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        setAdminSession(true);
+        updateAdminView();
+        renderBookings();
+        adminLoginForm.reset();
+        showMessage(adminSuccessMessage, 'Admin login successful. You can now view bookings.');
+        return;
+    }
+
+    showMessage(adminErrorMessage, 'Invalid admin credentials. Please try again.');
+});
+
+adminLogoutButton.addEventListener('click', () => {
+    setAdminSession(false);
+    updateAdminView();
+    showMessage(adminSuccessMessage, 'You have been logged out.');
+});
+
 setMinimumDate();
 renderBookings();
+updateAdminView();

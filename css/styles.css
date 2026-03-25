@@ -235,6 +235,40 @@ textarea:focus {
     padding: 16px;
 }
 
+.admin-login-form {
+    margin-bottom: 6px;
+}
+
+.admin-bookings-panel {
+    display: none;
+}
+
+.admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.admin-panel-header h3 {
+    font-size: 1.1rem;
+}
+
+.btn-secondary {
+    border: 1px solid #d5c9ea;
+    border-radius: 8px;
+    background: #fff;
+    color: #4b3f6a;
+    padding: 7px 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #f5efff;
+}
+
 .bookings-list {
     display: grid;
     gap: 10px;
