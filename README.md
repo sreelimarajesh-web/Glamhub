@@ -38,3 +38,4 @@
   - `GET /api/bookings`
   - `GET /api/health`
 - MongoDB connection is established from environment variables on each serverless runtime and re-used when possible.
+- Local `npm start` uses the same `api/*` handlers to avoid logic drift between local and Vercel environments.
