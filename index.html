@@ -78,7 +78,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="time">Time</label>
-                                <input type="time" id="time" name="time" required>
+                                <select id="time" name="time" required>
+                                    <option value="" disabled selected>Select a time slot</option>
+                                </select>
                             </div>
                         </div>
 
@@ -103,18 +105,43 @@
                 </div>
 
                 <aside class="bookings-section">
-                    <h2>Upcoming Bookings</h2>
-                    <div id="bookings-list" class="bookings-list">
-                        <p>No bookings yet. Your confirmed appointments will appear here.</p>
+                    <h2>Admin Booking Access</h2>
+                    <p class="section-text">Bookings are private. Log in as admin to view upcoming appointments.</p>
+
+                    <div id="admin-success-message" class="message success-message" role="alert"></div>
+                    <div id="admin-error-message" class="message error-message" role="alert"></div>
+
+                    <form id="admin-login-form" class="booking-form admin-login-form">
+                        <div class="form-group">
+                            <label for="admin-username">Username</label>
+                            <input type="text" id="admin-username" name="username" placeholder="Enter admin username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="admin-password">Password</label>
+                            <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
+                        </div>
+
+                        <button class="btn-submit" type="submit">Admin Login</button>
+                    </form>
+
+                    <div id="admin-bookings-panel" class="admin-bookings-panel">
+                        <div class="admin-panel-header">
+                            <h3>Upcoming Bookings</h3>
+                            <button id="admin-logout-button" class="btn-secondary" type="button">Logout</button>
+                        </div>
+                        <div id="bookings-list" class="bookings-list">
+                            <p>No bookings yet. Confirmed appointments will appear here for admin.</p>
+                        </div>
                     </div>
                 </aside>
             </section>
 
             <section id="gallery" class="gallery">
-                <h2>Salon Mood</h2>
+                <h2>Gents Style Gallery</h2>
                 <div class="gallery-grid">
-                    <img src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=700&q=80" alt="Salon interior with mirrors and chairs">
-                    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=700&q=80" alt="Stylist working on a client hair">
+                    <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=700&q=80" alt="Barber trimming a gent's beard">
+                    <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=700&q=80" alt="Gent getting a fresh barber haircut">
                 </div>
             </section>
         </main>
