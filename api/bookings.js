@@ -28,12 +28,11 @@ function isAuthorizedAdmin(req) {
 }
 
 module.exports = async (req, res) => {
-    try {
-        await connectToDatabase();
+    await connectToDatabase();
 
-        if (req.method === 'POST') {
-            const parsedBody = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-            const { name, email, date, time, service, notes = '' } = parsedBody;
+    if (req.method === 'POST') {
+        try {
+            const { name, email, date, time, service, notes = '' } = req.body || {};
 
             if (!name || !email || !date || !time || !service) {
                 return res.status(400).json({ error: 'Please complete all required booking details.' });
@@ -57,22 +56,23 @@ module.exports = async (req, res) => {
             });
 
             return res.status(201).json(booking);
+        } catch (error) {
+            return res.status(500).json({ error: 'Unable to save booking right now.' });
+        }
+    }
+
+    if (req.method === 'GET') {
+        if (!isAuthorizedAdmin(req)) {
+            return res.status(401).json({ error: 'Unauthorized admin access.' });
         }
 
-        if (req.method === 'GET') {
-            if (!isAuthorizedAdmin(req)) {
-                return res.status(401).json({ error: 'Unauthorized admin access.' });
-            }
-
+        try {
             const bookings = await Booking.find({}).sort({ createdAt: -1 }).lean();
             return res.status(200).json(bookings);
+        } catch (error) {
+            return res.status(500).json({ error: 'Unable to fetch bookings right now.' });
         }
-
-        return res.status(405).json({ error: 'Method not allowed.' });
-    } catch (error) {
-        return res.status(500).json({
-            error: 'Booking service unavailable.',
-            details: error.message
-        });
     }
+
+    return res.status(405).json({ error: 'Method not allowed.' });
 };

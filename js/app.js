@@ -151,13 +151,11 @@ async function fetchBookingsFromMongo() {
         }
     });
 
-    const payload = await response.json().catch(() => ({}));
-
     if (!response.ok) {
-        throw new Error(payload.error || 'Unable to fetch bookings right now.');
+        throw new Error('Unable to fetch bookings right now.');
     }
 
-    return payload;
+    return response.json();
 }
 
 bookingForm.addEventListener('submit', async (event) => {
@@ -197,7 +195,7 @@ bookingForm.addEventListener('submit', async (event) => {
             body: JSON.stringify(booking)
         });
 
-        const payload = await response.json().catch(() => ({}));
+        const payload = await response.json();
 
         if (!response.ok) {
             showMessage(errorMessage, payload.error || 'Unable to save your booking right now.');
