@@ -14,6 +14,11 @@ if (!MONGODB_URI) {
     process.exit(1);
 }
 
+if (MONGODB_URI.includes('<') || MONGODB_URI.includes('>')) {
+    console.error('MONGODB_URI still contains placeholder brackets. Update it with real MongoDB credentials before starting the server.');
+    process.exit(1);
+}
+
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch((error) => {

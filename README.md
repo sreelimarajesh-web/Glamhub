@@ -10,6 +10,8 @@
    ```bash
    cp .env.example .env
    ```
+   Replace the placeholder values (`<username>`, `<password>`, `<cluster>`, `<database>`) in `.env` with real credentials.  
+   If your password contains special characters (such as `@`, `:`, `/`, or `#`), URL-encode it first.
 3. Start the app:
    ```bash
    export $(cat .env | xargs) && npm start
