@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlamHub | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container admin-container">
+        <header class="site-header">
+            <div class="brand-wrap">
+                <span class="logo">GlamHub Admin</span>
+                <nav>
+                    <a href="index.html">Back to Booking</a>
+                </nav>
+            </div>
+            <p class="subtext">View all bookings, inspect booked person details, and cancel with a reason.</p>
+        </header>
+
+        <main>
+            <section class="bookings-section admin-page-layout">
+                <div id="admin-success-message" class="message success-message" role="alert"></div>
+                <div id="admin-error-message" class="message error-message" role="alert"></div>
+
+                <form id="admin-login-form" class="booking-form admin-login-form">
+                    <h2>Admin Login</h2>
+                    <div class="form-group">
+                        <label for="admin-username">Username</label>
+                        <input type="text" id="admin-username" name="username" placeholder="Enter admin username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
+                    </div>
+                    <button class="btn-submit" type="submit">Admin Login</button>
+                </form>
+
+                <div id="admin-bookings-panel" class="admin-bookings-panel">
+                    <div class="admin-panel-header">
+                        <h2>Booking Dashboard</h2>
+                        <button id="admin-logout-button" class="btn-secondary" type="button">Logout</button>
+                    </div>
+
+                    <div class="admin-dashboard">
+                        <aside class="admin-sidebar">
+                            <h3>Bookings</h3>
+                            <div id="bookings-list" class="bookings-list"></div>
+                        </aside>
+
+                        <section class="admin-detail" id="booking-detail-panel">
+                            <h3>Booked Person Details</h3>
+                            <p class="section-text">Select a booking from the sidebar to view full details.</p>
+                        </section>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

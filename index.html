@@ -18,6 +18,7 @@
                     <a href="#services">Services</a>
                     <a href="#booking">Book</a>
                     <a href="#gallery">Gallery</a>
+                    <a href="admin.html">Admin</a>
                 </nav>
             </div>
             <div class="hero">
@@ -52,7 +53,7 @@
                 </div>
             </section>
 
-            <section id="booking" class="booking-layout">
+            <section id="booking" class="booking-layout booking-layout-single">
                 <div class="booking-section">
                     <h2>Book Appointment</h2>
                     <p class="section-text">We are open Monday to Saturday, 9:00 AM to 8:00 PM.</p>
@@ -104,36 +105,10 @@
                     </form>
                 </div>
 
-                <aside class="bookings-section">
+                <aside class="bookings-section admin-shortcut-card">
                     <h2>Admin Booking Access</h2>
-                    <p class="section-text">Bookings are private. Log in as admin to view upcoming appointments.</p>
-
-                    <div id="admin-success-message" class="message success-message" role="alert"></div>
-                    <div id="admin-error-message" class="message error-message" role="alert"></div>
-
-                    <form id="admin-login-form" class="booking-form admin-login-form">
-                        <div class="form-group">
-                            <label for="admin-username">Username</label>
-                            <input type="text" id="admin-username" name="username" placeholder="Enter admin username" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="admin-password">Password</label>
-                            <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
-                        </div>
-
-                        <button class="btn-submit" type="submit">Admin Login</button>
-                    </form>
-
-                    <div id="admin-bookings-panel" class="admin-bookings-panel">
-                        <div class="admin-panel-header">
-                            <h3>Upcoming Bookings</h3>
-                            <button id="admin-logout-button" class="btn-secondary" type="button">Logout</button>
-                        </div>
-                        <div id="bookings-list" class="bookings-list">
-                            <p>No bookings yet. Confirmed appointments will appear here for admin.</p>
-                        </div>
-                    </div>
+                    <p class="section-text">Bookings are private. Open the dedicated admin page to review appointments, see person details, and cancel with reason.</p>
+                    <a class="btn-submit admin-page-link" href="admin.html">Go to Admin Page</a>
                 </aside>
             </section>
 

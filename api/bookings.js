@@ -47,6 +47,16 @@ function parseJsonBody(body) {
     return {};
 }
 
+function extractCancelBookingId(req) {
+    if (req.query?.id) {
+        return req.query.id;
+    }
+
+    const url = req.url || '';
+    const match = url.match(/\/api\/bookings\/([^/]+)\/cancel/);
+    return match ? match[1] : null;
+}
+
 module.exports = async (req, res) => {
     await connectToDatabase();
 
@@ -95,6 +105,47 @@ module.exports = async (req, res) => {
             return res.status(200).json(bookings);
         } catch (error) {
             return res.status(500).json({ error: 'Unable to fetch bookings right now.' });
+        }
+    }
+
+    if (req.method === 'PATCH') {
+        if (!isAuthorizedAdmin(req)) {
+            return res.status(401).json({ error: 'Unauthorized admin access.' });
+        }
+
+        try {
+            const bookingId = extractCancelBookingId(req);
+            const payload = parseJsonBody(req.body);
+            const reason = String(payload.reason || '').trim();
+
+            if (!bookingId) {
+                return res.status(400).json({ error: 'Booking id is required.' });
+            }
+
+            if (!reason) {
+                return res.status(400).json({ error: 'Cancellation reason is required.' });
+            }
+
+            const booking = await Booking.findByIdAndUpdate(
+                bookingId,
+                {
+                    status: 'cancelled',
+                    cancellationReason: reason,
+                    cancelledAt: new Date()
+                },
+                { new: true }
+            ).lean();
+
+            if (!booking) {
+                return res.status(404).json({ error: 'Booking not found.' });
+            }
+
+            return res.status(200).json(booking);
+        } catch (error) {
+            if (error instanceof SyntaxError) {
+                return res.status(400).json({ error: 'Invalid cancellation payload.' });
+            }
+            return res.status(500).json({ error: 'Unable to cancel booking right now.' });
         }
     }
 

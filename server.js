@@ -26,7 +26,10 @@ const bookingSchema = new mongoose.Schema({
     date: { type: String, required: true },
     time: { type: String, required: true },
     service: { type: String, required: true },
-    notes: { type: String, default: '', trim: true }
+    notes: { type: String, default: '', trim: true },
+    status: { type: String, enum: ['active', 'cancelled'], default: 'active' },
+    cancellationReason: { type: String, default: '', trim: true },
+    cancelledAt: { type: Date, default: null }
 }, {
     timestamps: true
 });
@@ -105,6 +108,34 @@ app.get('/api/bookings', requireAdmin, async (_req, res) => {
         return res.json(bookings);
     } catch (error) {
         return res.status(500).json({ error: 'Unable to fetch bookings right now.' });
+    }
+});
+
+app.patch('/api/bookings/:id/cancel', requireAdmin, async (req, res) => {
+    try {
+        const reason = String(req.body.reason || '').trim();
+
+        if (!reason) {
+            return res.status(400).json({ error: 'Cancellation reason is required.' });
+        }
+
+        const booking = await Booking.findByIdAndUpdate(
+            req.params.id,
+            {
+                status: 'cancelled',
+                cancellationReason: reason,
+                cancelledAt: new Date()
+            },
+            { new: true }
+        ).lean();
+
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        return res.json(booking);
+    } catch (error) {
+        return res.status(500).json({ error: 'Unable to cancel booking right now.' });
     }
 });
 
