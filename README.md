@@ -17,6 +17,7 @@
    export $(cat .env | xargs) && npm start
    ```
 4. Open `http://localhost:3000`.
+   Do not open `index.html` directly via `file://`; API calls require running through the server URL.
 
 ## MongoDB storage
 

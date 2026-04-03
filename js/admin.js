@@ -9,7 +9,17 @@ const bookingDetailPanel = document.getElementById('booking-detail-panel');
 const ADMIN_SESSION_KEY = 'glamhub_admin_logged_in';
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'adminhub';
-const BOOKINGS_API_URL = '/api/bookings';
+function getBookingsApiUrl() {
+    const { protocol, origin } = window.location;
+
+    if (protocol === 'http:' || protocol === 'https:') {
+        return `${origin}/api/bookings`;
+    }
+
+    return 'http://localhost:3000/api/bookings';
+}
+
+const BOOKINGS_API_URL = getBookingsApiUrl();
 
 let allBookings = [];
 let selectedBookingId = null;
