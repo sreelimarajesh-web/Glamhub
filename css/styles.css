@@ -412,3 +412,12 @@ textarea:focus {
         grid-template-columns: 1fr;
     }
 }
+
+.admin-action-row {
+    margin-top: 12px;
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -54,6 +54,25 @@ function setAdminSession(isLoggedIn) {
     localStorage.setItem(ADMIN_SESSION_KEY, isLoggedIn ? 'true' : 'false');
 }
 
+async function callAdminBookingAction(bookingId, action, payload = {}) {
+    const response = await fetch(`${BOOKINGS_API_URL}/${bookingId}/${action}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-admin-username': ADMIN_USERNAME,
+            'x-admin-password': ADMIN_PASSWORD
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || 'Unable to update booking right now.');
+    }
+
+    return data;
+}
+
 function renderBookingDetails(booking) {
     if (!booking) {
         bookingDetailPanel.innerHTML = `
@@ -62,6 +81,9 @@ function renderBookingDetails(booking) {
         `;
         return;
     }
+
+    const isCancelled = booking.status === 'cancelled';
+    const isAccepted = booking.status === 'accepted';
 
     bookingDetailPanel.innerHTML = `
         <h3>Booked Person Details</h3>
@@ -72,9 +94,13 @@ function renderBookingDetails(booking) {
             <p><strong>Email:</strong> ${booking.email}</p>
             <p><strong>Status:</strong> ${booking.status || 'active'}</p>
             <p><strong>Notes:</strong> ${booking.notes || '—'}</p>
-            ${booking.status === 'cancelled' ? `<p><strong>Cancellation Reason:</strong> ${booking.cancellationReason || 'N/A'}</p>` : ''}
+            ${isAccepted ? '<p><strong>Confirmation:</strong> Booking accepted and confirmation email sent (if SMTP configured).</p>' : ''}
+            ${isCancelled ? `<p><strong>Cancellation Reason:</strong> ${booking.cancellationReason || 'N/A'}</p>` : ''}
         </article>
-        ${booking.status === 'cancelled' ? '' : `
+        <div class="admin-action-row">
+            ${isCancelled ? '' : `<button id="accept-booking-button" class="btn-submit" type="button" ${isAccepted ? 'disabled' : ''}>${isAccepted ? 'Already Accepted' : 'Accept Booking'}</button>`}
+        </div>
+        ${isCancelled ? '' : `
             <form id="cancel-booking-form" class="booking-form cancel-booking-form">
                 <div class="form-group">
                     <label for="cancellation-reason">Cancellation Reason</label>
@@ -84,6 +110,23 @@ function renderBookingDetails(booking) {
             </form>
         `}
     `;
+
+    const acceptButton = document.getElementById('accept-booking-button');
+    if (acceptButton && !isAccepted) {
+        acceptButton.addEventListener('click', async () => {
+            try {
+                const payload = await callAdminBookingAction(booking._id, 'accept');
+                const emailMessage = payload.email?.sent
+                    ? ' Acceptance email was sent to customer.'
+                    : ' Booking accepted, but email was not sent (check SMTP settings).';
+
+                showMessage(adminSuccessMessage, `Booking accepted for ${booking.name}.${emailMessage}`);
+                await refreshBookings();
+            } catch (error) {
+                showMessage(adminErrorMessage, error.message);
+            }
+        });
+    }
 
     const cancelForm = document.getElementById('cancel-booking-form');
     if (cancelForm) {
@@ -97,26 +140,11 @@ function renderBookingDetails(booking) {
             }
 
             try {
-                const response = await fetch(`${BOOKINGS_API_URL}/${booking._id}/cancel`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-admin-username': ADMIN_USERNAME,
-                        'x-admin-password': ADMIN_PASSWORD
-                    },
-                    body: JSON.stringify({ reason })
-                });
-
-                const payload = await response.json();
-                if (!response.ok) {
-                    showMessage(adminErrorMessage, payload.error || 'Unable to cancel booking right now.');
-                    return;
-                }
-
+                await callAdminBookingAction(booking._id, 'cancel', { reason });
                 showMessage(adminSuccessMessage, `Booking cancelled for ${booking.name}.`);
                 await refreshBookings();
             } catch (error) {
-                showMessage(adminErrorMessage, 'Unable to connect to booking service. Please try again.');
+                showMessage(adminErrorMessage, error.message);
             }
         });
     }

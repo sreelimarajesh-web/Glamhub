@@ -59,7 +59,8 @@ module.exports = async (req, res) => {
             {
                 status: 'cancelled',
                 cancellationReason: reason,
-                cancelledAt: new Date()
+                cancelledAt: new Date(),
+                acceptedAt: null
             },
             { new: true }
         ).lean();

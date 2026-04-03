@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const { sendBookingAcceptedEmail } = require('./lib/email');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,9 +28,10 @@ const bookingSchema = new mongoose.Schema({
     time: { type: String, required: true },
     service: { type: String, required: true },
     notes: { type: String, default: '', trim: true },
-    status: { type: String, enum: ['active', 'cancelled'], default: 'active' },
+    status: { type: String, enum: ['active', 'accepted', 'cancelled'], default: 'active' },
     cancellationReason: { type: String, default: '', trim: true },
-    cancelledAt: { type: Date, default: null }
+    cancelledAt: { type: Date, default: null },
+    acceptedAt: { type: Date, default: null }
 }, {
     timestamps: true
 });
@@ -111,6 +113,38 @@ app.get('/api/bookings', requireAdmin, async (_req, res) => {
     }
 });
 
+app.patch('/api/bookings/:id/accept', requireAdmin, async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.status === 'cancelled') {
+            return res.status(400).json({ error: 'Cancelled booking cannot be accepted.' });
+        }
+
+        booking.status = 'accepted';
+        booking.acceptedAt = new Date();
+        booking.cancellationReason = '';
+        booking.cancelledAt = null;
+        await booking.save();
+
+        const emailResult = await sendBookingAcceptedEmail({
+            to: booking.email,
+            name: booking.name,
+            service: booking.service,
+            date: booking.date,
+            time: booking.time
+        });
+
+        return res.json({ booking: booking.toObject(), email: emailResult });
+    } catch (error) {
+        return res.status(500).json({ error: 'Unable to accept booking right now.' });
+    }
+});
+
 app.patch('/api/bookings/:id/cancel', requireAdmin, async (req, res) => {
     try {
         const reason = String(req.body.reason || '').trim();
@@ -124,7 +158,8 @@ app.patch('/api/bookings/:id/cancel', requireAdmin, async (req, res) => {
             {
                 status: 'cancelled',
                 cancellationReason: reason,
-                cancelledAt: new Date()
+                cancelledAt: new Date(),
+                acceptedAt: null
             },
             { new: true }
         ).lean();
