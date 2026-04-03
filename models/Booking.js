@@ -6,7 +6,11 @@ const bookingSchema = new mongoose.Schema({
     date: { type: String, required: true },
     time: { type: String, required: true },
     service: { type: String, required: true },
-    notes: { type: String, default: '', trim: true }
+    notes: { type: String, default: '', trim: true },
+    status: { type: String, enum: ['active', 'accepted', 'cancelled'], default: 'active' },
+    cancellationReason: { type: String, default: '', trim: true },
+    cancelledAt: { type: Date, default: null },
+    acceptedAt: { type: Date, default: null }
 }, {
     timestamps: true
 });

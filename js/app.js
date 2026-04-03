@@ -1,28 +1,10 @@
 const bookingForm = document.getElementById('booking-form');
-const bookingsList = document.getElementById('bookings-list');
 const successMessage = document.getElementById('success-message');
 const errorMessage = document.getElementById('error-message');
 const dateInput = document.getElementById('date');
 const timeInput = document.getElementById('time');
-const adminLoginForm = document.getElementById('admin-login-form');
-const adminBookingsPanel = document.getElementById('admin-bookings-panel');
-const adminSuccessMessage = document.getElementById('admin-success-message');
-const adminErrorMessage = document.getElementById('admin-error-message');
-const adminLogoutButton = document.getElementById('admin-logout-button');
 
-const ADMIN_SESSION_KEY = 'glamhub_admin_logged_in';
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'adminhub';
 const BOOKINGS_API_URL = '/api/bookings';
-
-function formatDate(isoDate) {
-    return new Date(`${isoDate}T00:00:00`).toLocaleDateString(undefined, {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-    });
-}
 
 function formatTime(time24) {
     const [hoursString, minutesString] = time24.split(':');
@@ -45,42 +27,6 @@ function showMessage(element, message) {
     setTimeout(() => {
         element.style.display = 'none';
     }, 3500);
-}
-
-function renderBookings(bookings) {
-    if (!bookings.length) {
-        bookingsList.innerHTML = '<p>No bookings yet. Confirmed appointments will appear here for admin.</p>';
-        return;
-    }
-
-    bookingsList.innerHTML = bookings
-        .map((booking) => `
-            <article class="booking-item">
-                <h4>${booking.name} · ${booking.service}</h4>
-                <p>${formatDate(booking.date)} at ${formatTime(booking.time)}</p>
-                <p>${booking.email}</p>
-            </article>
-        `)
-        .join('');
-}
-
-function isAdminLoggedIn() {
-    return localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
-}
-
-function setAdminSession(isLoggedIn) {
-    localStorage.setItem(ADMIN_SESSION_KEY, isLoggedIn ? 'true' : 'false');
-}
-
-function updateAdminView() {
-    const loggedIn = isAdminLoggedIn();
-
-    adminLoginForm.style.display = loggedIn ? 'none' : 'grid';
-    adminBookingsPanel.style.display = loggedIn ? 'block' : 'none';
-
-    if (!loggedIn) {
-        bookingsList.innerHTML = '<p>No bookings yet. Confirmed appointments will appear here for admin.</p>';
-    }
 }
 
 function setBookingDateRange() {
@@ -143,21 +89,6 @@ function populateTimeSlots() {
     `;
 }
 
-async function fetchBookingsFromMongo() {
-    const response = await fetch(BOOKINGS_API_URL, {
-        headers: {
-            'x-admin-username': ADMIN_USERNAME,
-            'x-admin-password': ADMIN_PASSWORD
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error('Unable to fetch bookings right now.');
-    }
-
-    return response.json();
-}
-
 bookingForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -205,58 +136,10 @@ bookingForm.addEventListener('submit', async (event) => {
         bookingForm.reset();
         setBookingDateRange();
         showMessage(successMessage, `Thanks ${booking.name}! Your ${booking.service} appointment is confirmed.`);
-
-        if (isAdminLoggedIn()) {
-            const bookings = await fetchBookingsFromMongo();
-            renderBookings(bookings);
-        }
     } catch (error) {
         showMessage(errorMessage, 'Unable to connect to booking service. Please try again.');
     }
 });
 
-adminLoginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(adminLoginForm);
-    const username = formData.get('username')?.trim();
-    const password = formData.get('password');
-
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-        showMessage(adminErrorMessage, 'Invalid admin credentials. Please try again.');
-        return;
-    }
-
-    try {
-        setAdminSession(true);
-        updateAdminView();
-        adminLoginForm.reset();
-
-        const bookings = await fetchBookingsFromMongo();
-        renderBookings(bookings);
-        showMessage(adminSuccessMessage, 'Admin login successful. You can now view bookings.');
-    } catch (error) {
-        setAdminSession(false);
-        updateAdminView();
-        showMessage(adminErrorMessage, 'Login worked, but bookings could not be loaded from MongoDB.');
-    }
-});
-
-adminLogoutButton.addEventListener('click', () => {
-    setAdminSession(false);
-    updateAdminView();
-    showMessage(adminSuccessMessage, 'You have been logged out.');
-});
-
 setBookingDateRange();
 populateTimeSlots();
-updateAdminView();
-
-if (isAdminLoggedIn()) {
-    fetchBookingsFromMongo()
-        .then(renderBookings)
-        .catch(() => {
-            setAdminSession(false);
-            updateAdminView();
-        });
-}
