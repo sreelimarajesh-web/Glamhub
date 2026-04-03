@@ -1,5 +1,5 @@
-const connectToDatabase = require('../../../../lib/mongodb');
-const Booking = require('../../../../models/Booking');
+const connectToDatabase = require('../../../lib/mongodb');
+const Booking = require('../../../models/Booking');
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'adminhub';

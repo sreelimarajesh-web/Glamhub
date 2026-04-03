@@ -10,11 +10,14 @@
    ```bash
    cp .env.example .env
    ```
+   Replace the placeholder values (`<username>`, `<password>`, `<cluster>`, `<database>`) in `.env` with real credentials.  
+   If your password contains special characters (such as `@`, `:`, `/`, or `#`), URL-encode it first.
 3. Start the app:
    ```bash
    export $(cat .env | xargs) && npm start
    ```
 4. Open `http://localhost:3000`.
+   Do not open `index.html` directly via `file://`; API calls require running through the server URL.
 
 ## MongoDB storage
 

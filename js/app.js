@@ -4,7 +4,17 @@ const errorMessage = document.getElementById('error-message');
 const dateInput = document.getElementById('date');
 const timeInput = document.getElementById('time');
 
-const BOOKINGS_API_URL = '/api/bookings';
+function getBookingsApiUrl() {
+    const { protocol, origin } = window.location;
+
+    if (protocol === 'http:' || protocol === 'https:') {
+        return `${origin}/api/bookings`;
+    }
+
+    return 'http://localhost:3000/api/bookings';
+}
+
+const BOOKINGS_API_URL = getBookingsApiUrl();
 
 function formatTime(time24) {
     const [hoursString, minutesString] = time24.split(':');
