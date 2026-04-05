@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const { ExpressAuth } = require('@auth/express');
+const Credentials = require('@auth/core/providers/credentials').default;
 const { sendBookingAcceptedEmail } = require('./lib/email');
 const { OAuth2Client } = require('google-auth-library');
 
@@ -10,6 +12,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'adminhub';
 const GOOGLE_OAUTH_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
+const AUTH_SECRET = process.env.AUTH_SECRET || 'glamhub-auth-secret';
 const googleClient = GOOGLE_OAUTH_CLIENT_ID ? new OAuth2Client(GOOGLE_OAUTH_CLIENT_ID) : null;
 
 if (!MONGODB_URI) {
@@ -107,6 +110,40 @@ async function verifyGoogleIdToken(idToken) {
 app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
 });
+
+app.use('/api/auth/*', ExpressAuth({
+    secret: AUTH_SECRET,
+    trustHost: true,
+    providers: [
+        Credentials({
+            id: 'google-id-token',
+            name: 'Google ID Token',
+            credentials: {
+                idToken: { label: 'Google ID Token', type: 'text' }
+            },
+            authorize: async (credentials) => {
+                const idToken = String(credentials?.idToken || '');
+                const authResult = await verifyGoogleIdToken(idToken);
+
+                if (!authResult.ok) {
+                    return null;
+                }
+
+                return {
+                    id: authResult.profile.email,
+                    email: authResult.profile.email,
+                    name: authResult.profile.name || authResult.profile.email
+                };
+            }
+        })
+    ],
+    pages: {
+        signIn: '/'
+    },
+    session: {
+        strategy: 'jwt'
+    }
+}));
 
 app.post('/api/bookings', async (req, res) => {
     try {

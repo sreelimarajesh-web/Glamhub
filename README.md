@@ -6,7 +6,7 @@
    ```bash
    npm install
    ```
-2. Copy env template and add your MongoDB URL + Google OAuth Client ID:
+2. Copy env template and add your MongoDB URL + Google OAuth credentials:
    ```bash
    cp .env.example .env
    ```
@@ -26,6 +26,8 @@
 
 - Booking submissions are stored in MongoDB via `POST /api/bookings`.
 - Booking submission now requires a valid Google Sign-In ID token.
+- Auth.js (NextAuth.js) is integrated at `/api/auth/*` using a credentials provider that accepts a Google ID token.
+- Set `AUTH_SECRET` in environment variables for Auth.js JWT/session encryption.
 - Admin-only booking list is fetched from MongoDB via `GET /api/bookings`.
 - Admin auth headers used by the frontend:
   - `x-admin-username`
