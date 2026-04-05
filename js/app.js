@@ -9,6 +9,7 @@ const GOOGLE_CLIENT_ID = window.GOOGLE_OAUTH_CLIENT_ID || '72416329561-c4enbj103
 const BOOKINGS_API_URL = '/api/bookings';
 let googleIdToken = '';
 let signedInUserName = '';
+let googleLoginInitialized = false;
 
 function formatTime(time24) {
     const [hoursString, minutesString] = time24.split(':');
@@ -147,14 +148,19 @@ function handleGoogleSignIn(response) {
 }
 
 function initializeGoogleLogin() {
+    if (googleLoginInitialized) {
+        return true;
+    }
+
+    renderAuthStatus('Loading Google Sign-In...');
+
     if (!window.google?.accounts?.id) {
-        renderAuthStatus('Google Sign-In library failed to load. Please refresh the page.');
-        return;
+        return false;
     }
 
     if (!GOOGLE_CLIENT_ID) {
         renderAuthStatus('Missing Google OAuth Client ID. Set window.GOOGLE_OAUTH_CLIENT_ID before loading app.js.');
-        return;
+        return true;
     }
 
     window.google.accounts.id.initialize({
@@ -172,6 +178,32 @@ function initializeGoogleLogin() {
             shape: 'pill'
         }
     );
+
+    googleLoginInitialized = true;
+
+    return true;
+}
+
+function initializeGoogleLoginWithRetry(maxRetries = 20, delayMs = 250) {
+    let attempts = 0;
+
+    const tryInitialize = () => {
+        attempts += 1;
+        const completed = initializeGoogleLogin();
+
+        if (completed) {
+            return;
+        }
+
+        if (attempts >= maxRetries) {
+            renderAuthStatus('Google Sign-In library failed to load. Please refresh the page.');
+            return;
+        }
+
+        setTimeout(tryInitialize, delayMs);
+    };
+
+    tryInitialize();
 }
 
 bookingForm.addEventListener('submit', async (event) => {
@@ -237,4 +269,9 @@ bookingForm.addEventListener('submit', async (event) => {
 setBookingDateRange();
 populateTimeSlots();
 toggleBookingForm(false);
-initializeGoogleLogin();
+initializeGoogleLoginWithRetry();
+
+const googleScript = document.getElementById('google-gsi-client');
+if (googleScript) {
+    googleScript.addEventListener('load', () => initializeGoogleLoginWithRetry(2, 100));
+}
