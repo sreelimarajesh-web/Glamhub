@@ -155,6 +155,23 @@ h2 {
     margin-bottom: 16px;
 }
 
+.google-auth-wrap {
+    margin-bottom: 14px;
+    display: grid;
+    gap: 8px;
+}
+
+.google-auth-status {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #7a2d47;
+}
+
+.google-auth-status.authenticated {
+    color: #0d6b3c;
+    font-weight: 600;
+}
+
 .booking-form {
     display: grid;
     gap: 14px;

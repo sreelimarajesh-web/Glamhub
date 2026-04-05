@@ -1,9 +1,12 @@
 const connectToDatabase = require('../lib/mongodb');
 const Booking = require('../models/Booking');
 const { sendBookingAcceptedEmail } = require('../lib/email');
+const { OAuth2Client } = require('google-auth-library');
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'adminhub';
+const GOOGLE_OAUTH_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID || '';
+const googleClient = GOOGLE_OAUTH_CLIENT_ID ? new OAuth2Client(GOOGLE_OAUTH_CLIENT_ID) : null;
 
 function isWithinBookingWindow(isoDate) {
     const selected = new Date(`${isoDate}T00:00:00`);
@@ -61,15 +64,54 @@ function extractBookingAction(req) {
     };
 }
 
+async function verifyGoogleIdToken(idToken) {
+    if (!GOOGLE_OAUTH_CLIENT_ID) {
+        return { ok: false, error: 'Google sign-in is not configured on server.' };
+    }
+
+    if (!idToken) {
+        return { ok: false, error: 'Google sign-in is required before booking.' };
+    }
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: GOOGLE_OAUTH_CLIENT_ID
+        });
+
+        const payload = ticket.getPayload() || {};
+        if (!payload.email || !payload.email_verified) {
+            return { ok: false, error: 'Verified Gmail account is required for booking.' };
+        }
+
+        return {
+            ok: true,
+            profile: {
+                email: payload.email,
+                name: payload.name || ''
+            }
+        };
+    } catch (error) {
+        return { ok: false, error: 'Invalid Google sign-in session. Please sign in again.' };
+    }
+}
+
 module.exports = async (req, res) => {
     await connectToDatabase();
 
     if (req.method === 'POST') {
         try {
             const payload = parseJsonBody(req.body);
-            const { name, email, date, time, service, notes = '' } = payload;
+            const { name, date, time, service, notes = '', idToken } = payload;
+            const authResult = await verifyGoogleIdToken(idToken);
 
-            if (!name || !email || !date || !time || !service) {
+            if (!authResult.ok) {
+                return res.status(401).json({ error: authResult.error });
+            }
+
+            const authenticatedEmail = authResult.profile.email;
+
+            if (!name || !authenticatedEmail || !date || !time || !service) {
                 return res.status(400).json({ error: 'Please complete all required booking details.' });
             }
 
@@ -83,7 +125,7 @@ module.exports = async (req, res) => {
 
             const booking = await Booking.create({
                 name: String(name).trim(),
-                email: String(email).trim(),
+                email: String(authenticatedEmail).trim(),
                 date,
                 time,
                 service,

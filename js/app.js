@@ -3,8 +3,13 @@ const successMessage = document.getElementById('success-message');
 const errorMessage = document.getElementById('error-message');
 const dateInput = document.getElementById('date');
 const timeInput = document.getElementById('time');
+const authStatus = document.getElementById('google-auth-status');
+const GOOGLE_CLIENT_ID = window.GOOGLE_OAUTH_CLIENT_ID || '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com';
 
 const BOOKINGS_API_URL = '/api/bookings';
+let googleIdToken = '';
+let signedInUserName = '';
+let googleLoginInitialized = false;
 
 function formatTime(time24) {
     const [hoursString, minutesString] = time24.split(':');
@@ -27,6 +32,22 @@ function showMessage(element, message) {
     setTimeout(() => {
         element.style.display = 'none';
     }, 3500);
+}
+
+function toggleBookingForm(isEnabled) {
+    const fields = bookingForm.querySelectorAll('input, select, textarea, button');
+    fields.forEach((field) => {
+        field.disabled = !isEnabled;
+    });
+}
+
+function renderAuthStatus(message, isSuccess = false) {
+    if (!authStatus) {
+        return;
+    }
+
+    authStatus.textContent = message;
+    authStatus.classList.toggle('authenticated', isSuccess);
 }
 
 function setBookingDateRange() {
@@ -89,8 +110,109 @@ function populateTimeSlots() {
     `;
 }
 
+function handleGoogleSignIn(response) {
+    const token = response?.credential;
+
+    if (!token) {
+        googleIdToken = '';
+        signedInUserName = '';
+        toggleBookingForm(false);
+        renderAuthStatus('Google sign-in failed. Please try again.');
+        return;
+    }
+
+    googleIdToken = token;
+
+    try {
+        const [, payloadSegment] = token.split('.');
+        const payload = JSON.parse(atob(payloadSegment));
+        signedInUserName = payload?.name || '';
+        const email = payload?.email || '';
+
+        if (email) {
+            const emailField = document.getElementById('email');
+            emailField.value = email;
+            emailField.readOnly = true;
+        }
+
+        if (signedInUserName) {
+            const nameField = document.getElementById('name');
+            nameField.value = signedInUserName;
+        }
+    } catch (error) {
+        signedInUserName = '';
+    }
+
+    toggleBookingForm(true);
+    renderAuthStatus('Signed in with Gmail. You can now book your appointment.', true);
+}
+
+function initializeGoogleLogin() {
+    if (googleLoginInitialized) {
+        return true;
+    }
+
+    renderAuthStatus('Loading Google Sign-In...');
+
+    if (!window.google?.accounts?.id) {
+        return false;
+    }
+
+    if (!GOOGLE_CLIENT_ID) {
+        renderAuthStatus('Missing Google OAuth Client ID. Set window.GOOGLE_OAUTH_CLIENT_ID before loading app.js.');
+        return true;
+    }
+
+    window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleSignIn,
+        auto_select: false
+    });
+
+    window.google.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        {
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            shape: 'pill'
+        }
+    );
+
+    googleLoginInitialized = true;
+
+    return true;
+}
+
+function initializeGoogleLoginWithRetry(maxRetries = 20, delayMs = 250) {
+    let attempts = 0;
+
+    const tryInitialize = () => {
+        attempts += 1;
+        const completed = initializeGoogleLogin();
+
+        if (completed) {
+            return;
+        }
+
+        if (attempts >= maxRetries) {
+            renderAuthStatus('Google Sign-In library failed to load. Please refresh the page.');
+            return;
+        }
+
+        setTimeout(tryInitialize, delayMs);
+    };
+
+    tryInitialize();
+}
+
 bookingForm.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    if (!googleIdToken) {
+        showMessage(errorMessage, 'Please sign in with Gmail before confirming booking.');
+        return;
+    }
 
     const formData = new FormData(bookingForm);
     const booking = {
@@ -123,7 +245,10 @@ bookingForm.addEventListener('submit', async (event) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(booking)
+            body: JSON.stringify({
+                ...booking,
+                idToken: googleIdToken
+            })
         });
 
         const payload = await response.json();
@@ -143,3 +268,10 @@ bookingForm.addEventListener('submit', async (event) => {
 
 setBookingDateRange();
 populateTimeSlots();
+toggleBookingForm(false);
+initializeGoogleLoginWithRetry();
+
+const googleScript = document.getElementById('google-gsi-client');
+if (googleScript) {
+    googleScript.addEventListener('load', () => initializeGoogleLoginWithRetry(2, 100));
+}
