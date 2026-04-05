@@ -12,8 +12,9 @@
    ```
 3. Start the app:
    ```bash
-   export $(cat .env | xargs) && npm start
+   npm start
    ```
+   The server loads `.env` automatically at startup.
 4. Open `http://localhost:3000`.
 5. In `index.html`, set your browser client id before `js/app.js` loads:
    ```html
