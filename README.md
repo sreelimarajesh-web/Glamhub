@@ -6,7 +6,7 @@
    ```bash
    npm install
    ```
-2. Copy env template and add your MongoDB URL + Google OAuth Client ID:
+2. Copy env template and add your MongoDB URL + Google OAuth credentials:
    ```bash
    cp .env.example .env
    ```
