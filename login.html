@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlamHub | Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container narrow-container">
+        <header class="site-header">
+            <div class="brand-wrap">
+                <span class="logo">GlamHub</span>
+                <nav>
+                    <a href="index.html">Home</a>
+                </nav>
+            </div>
+            <h1>Login with Google</h1>
+            <p class="subtext">Use your Google account to open your booking page.</p>
+        </header>
+
+        <main>
+            <section class="bookings-section login-card">
+                <div id="google-signin-button"></div>
+                <p id="google-auth-status" class="google-auth-status" aria-live="polite">Please sign in to continue.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.GOOGLE_OAUTH_CLIENT_ID = '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com';
+    </script>
+    <script id="google-gsi-client" src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

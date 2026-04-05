@@ -438,3 +438,38 @@ textarea:focus {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.home-book-btn {
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 12px;
+    max-width: 180px;
+}
+
+.narrow-container {
+    max-width: 700px;
+}
+
+.login-card {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.my-booking-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.danger-btn {
+    border-color: #f2bccd;
+    color: #8d2040;
+    background: #fff5f8;
+}
+
+.danger-btn:hover {
+    background: #ffe8ef;
+}

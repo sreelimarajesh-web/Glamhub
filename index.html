@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlamHub | Salon Booking</title>
+    <title>GlamHub | Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,9 +15,6 @@
             <div class="brand-wrap">
                 <span class="logo">GlamHub</span>
                 <nav>
-                    <a href="#services">Services</a>
-                    <a href="#booking">Book</a>
-                    <a href="#gallery">Gallery</a>
                     <a href="admin.html">Admin</a>
                 </nav>
             </div>
@@ -25,118 +22,12 @@
                 <div class="hero-text">
                     <p class="eyebrow">Luxury care, easy scheduling</p>
                     <h1>Book your next salon appointment in minutes.</h1>
-                    <p class="subtext">Choose your service, pick your slot, and receive instant confirmation.</p>
+                    <p class="subtext">Click below to continue with Google login and manage your bookings.</p>
+                    <a class="btn-submit home-book-btn" href="login.html">Booking</a>
                 </div>
                 <img src="https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=900&q=80" alt="Hair styling at a salon">
             </div>
         </header>
-
-        <main>
-            <section id="services" class="services">
-                <h2>Popular Services</h2>
-                <div class="service-grid">
-                    <article class="service-card">
-                        <img src="https://images.unsplash.com/photo-1604902396830-aca29e19b067?auto=format&fit=crop&w=600&q=80" alt="Haircut and blow dry service">
-                        <h3>Haircut & Styling</h3>
-                        <p>Precision cut with wash and professional styling finish.</p>
-                    </article>
-                    <article class="service-card">
-                        <img src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=600&q=80" alt="Manicure with nail polish">
-                        <h3>Manicure</h3>
-                        <p>Nail shaping, cuticle care, and long-lasting gel polish.</p>
-                    </article>
-                    <article class="service-card">
-                        <img src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=600&q=80" alt="Facial skincare treatment">
-                        <h3>Signature Facial</h3>
-                        <p>Deep cleansing treatment designed for radiant, hydrated skin.</p>
-                    </article>
-                </div>
-            </section>
-
-            <section id="booking" class="booking-layout booking-layout-single">
-                <div class="booking-section">
-                    <h2>Book Appointment</h2>
-                    <p class="section-text">We are open Monday to Saturday, 9:00 AM to 8:00 PM.</p>
-                    <p class="section-text">Sign in with Gmail to unlock booking.</p>
-
-                    <div class="google-auth-wrap">
-                        <div id="google-signin-button"></div>
-                        <p id="google-auth-status" class="google-auth-status" aria-live="polite">Please sign in with Gmail before booking.</p>
-                    </div>
-
-                    <div id="success-message" class="message success-message" role="alert"></div>
-                    <div id="error-message" class="message error-message" role="alert"></div>
-
-                    <form id="booking-form" class="booking-form" data-requires-login="true">
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="you@example.com" required>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="date">Date</label>
-                                <input type="date" id="date" name="date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="time">Time</label>
-                                <select id="time" name="time" required>
-                                    <option value="" disabled selected>Select a time slot</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="service">Service</label>
-                            <select id="service" name="service" required>
-                                <option value="" disabled selected>Select a service</option>
-                                <option value="Haircut & Styling">Haircut & Styling</option>
-                                <option value="Manicure">Manicure</option>
-                                <option value="Signature Facial">Signature Facial</option>
-                                <option value="Hair Coloring">Hair Coloring</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="notes">Notes (optional)</label>
-                            <textarea id="notes" name="notes" rows="3" placeholder="Any preferences or requests?"></textarea>
-                        </div>
-
-                        <button class="btn-submit" type="submit">Confirm Booking</button>
-                    </form>
-                </div>
-
-                <aside class="bookings-section admin-shortcut-card">
-                    <h2>Admin Booking Access</h2>
-                    <p class="section-text">Bookings are private. Open the dedicated admin page to review appointments, see person details, and cancel with reason.</p>
-                    <a class="btn-submit admin-page-link" href="admin.html">Go to Admin Page</a>
-                </aside>
-            </section>
-
-            <section id="gallery" class="gallery">
-                <h2>Gents Style Gallery</h2>
-                <div class="gallery-grid">
-                    <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=700&q=80" alt="Barber trimming a gent's beard">
-                    <img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=700&q=80" alt="Gent getting a fresh barber haircut">
-                </div>
-            </section>
-        </main>
-
-        <footer class="site-footer">
-            <p>© 2026 GlamHub Salon. Walk-ins welcome, bookings recommended.</p>
-            <p>123 Beauty Lane, New York, NY · (555) 123-7890 · hello@glamhub.com</p>
-        </footer>
     </div>
-
-    <script>
-        window.GOOGLE_OAUTH_CLIENT_ID = '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com';
-    </script>
-    <script id="google-gsi-client" src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="js/app.js"></script>
 </body>
 </html>
