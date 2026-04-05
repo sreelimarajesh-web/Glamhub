@@ -72,6 +72,15 @@ function requireAdmin(req, res, next) {
     next();
 }
 
+function getIdTokenFromRequest(req) {
+    const authHeader = req.header('authorization') || '';
+    if (authHeader.startsWith('Bearer ')) {
+        return authHeader.slice('Bearer '.length).trim();
+    }
+
+    return req.body.idToken || '';
+}
+
 async function verifyGoogleIdToken(idToken) {
     if (!GOOGLE_OAUTH_CLIENT_ID) {
         return { ok: false, error: 'Google sign-in is not configured on server.' };
@@ -104,14 +113,26 @@ async function verifyGoogleIdToken(idToken) {
     }
 }
 
+async function requireUser(req, res, next) {
+    const idToken = getIdTokenFromRequest(req);
+    const authResult = await verifyGoogleIdToken(idToken);
+
+    if (!authResult.ok) {
+        return res.status(401).json({ error: authResult.error });
+    }
+
+    req.user = authResult.profile;
+    return next();
+}
+
 app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
 });
 
 app.post('/api/bookings', async (req, res) => {
     try {
-        const { name, date, time, service, notes = '', idToken } = req.body;
-        const authResult = await verifyGoogleIdToken(idToken);
+        const { name, date, time, service, notes = '' } = req.body;
+        const authResult = await verifyGoogleIdToken(getIdTokenFromRequest(req));
 
         if (!authResult.ok) {
             return res.status(401).json({ error: authResult.error });
@@ -143,6 +164,78 @@ app.post('/api/bookings', async (req, res) => {
         return res.status(201).json(booking);
     } catch (error) {
         return res.status(500).json({ error: 'Unable to save booking right now.' });
+    }
+});
+
+app.get('/api/my-bookings', requireUser, async (req, res) => {
+    try {
+        const bookings = await Booking.find({ email: req.user.email }).sort({ createdAt: -1 }).lean();
+        return res.json(bookings);
+    } catch (error) {
+        return res.status(500).json({ error: 'Unable to fetch your bookings right now.' });
+    }
+});
+
+app.patch('/api/my-bookings/:id/reschedule', requireUser, async (req, res) => {
+    try {
+        const { date, time } = req.body;
+
+        if (!date || !time) {
+            return res.status(400).json({ error: 'Date and time are required for reschedule.' });
+        }
+
+        if (!isWithinBookingWindow(date)) {
+            return res.status(400).json({ error: 'Bookings can only be rescheduled from today up to the next 7 days.' });
+        }
+
+        if (!isValidThirtyMinuteSlot(time)) {
+            return res.status(400).json({ error: 'Please select a time in 30-minute intervals.' });
+        }
+
+        const booking = await Booking.findOne({ _id: req.params.id, email: req.user.email });
+
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        if (booking.status === 'cancelled') {
+            return res.status(400).json({ error: 'Cancelled booking cannot be rescheduled.' });
+        }
+
+        booking.date = date;
+        booking.time = time;
+        booking.status = 'active';
+        booking.acceptedAt = null;
+        await booking.save();
+
+        return res.json(booking);
+    } catch (error) {
+        return res.status(500).json({ error: 'Unable to reschedule booking right now.' });
+    }
+});
+
+app.patch('/api/my-bookings/:id/cancel', requireUser, async (req, res) => {
+    try {
+        const reason = String(req.body.reason || 'Cancelled by customer').trim();
+
+        const booking = await Booking.findOneAndUpdate(
+            { _id: req.params.id, email: req.user.email },
+            {
+                status: 'cancelled',
+                cancellationReason: reason,
+                cancelledAt: new Date(),
+                acceptedAt: null
+            },
+            { new: true }
+        ).lean();
+
+        if (!booking) {
+            return res.status(404).json({ error: 'Booking not found.' });
+        }
+
+        return res.json(booking);
+    } catch (error) {
+        return res.status(500).json({ error: 'Unable to cancel booking right now.' });
     }
 });
 

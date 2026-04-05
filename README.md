@@ -30,3 +30,20 @@
 - Admin auth headers used by the frontend:
   - `x-admin-username`
   - `x-admin-password`
+
+
+## User flow
+
+- Home page (`/`) now shows only one **Booking** button.
+- Booking button opens `/login.html` for Google sign-in.
+- After login, users are redirected to `/user.html` where they can:
+  - create a booking
+  - view only their own booking details
+  - reschedule their booking
+  - cancel their booking
+
+### User APIs
+
+- `GET /api/my-bookings` (Google Bearer token required)
+- `PATCH /api/my-bookings/:id/reschedule` (Google Bearer token required)
+- `PATCH /api/my-bookings/:id/cancel` (Google Bearer token required)
