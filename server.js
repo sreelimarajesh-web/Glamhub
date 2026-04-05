@@ -1,8 +1,42 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const mongoose = require('mongoose');
 const { sendBookingAcceptedEmail } = require('./lib/email');
 const { OAuth2Client } = require('google-auth-library');
+
+function loadDotEnvFile() {
+    const envFilePath = path.join(__dirname, '.env');
+
+    if (!fs.existsSync(envFilePath)) {
+        return;
+    }
+
+    const envContents = fs.readFileSync(envFilePath, 'utf8');
+    const lines = envContents.split(/\r?\n/);
+
+    lines.forEach((line) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine || trimmedLine.startsWith('#')) {
+            return;
+        }
+
+        const separatorIndex = trimmedLine.indexOf('=');
+        if (separatorIndex <= 0) {
+            return;
+        }
+
+        const key = trimmedLine.slice(0, separatorIndex).trim();
+        const rawValue = trimmedLine.slice(separatorIndex + 1).trim();
+        const unquotedValue = rawValue.replace(/^(['"])(.*)\1$/, '$2');
+
+        if (!process.env[key]) {
+            process.env[key] = unquotedValue;
+        }
+    });
+}
+
+loadDotEnvFile();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
