@@ -117,7 +117,7 @@ function getIdTokenFromRequest(req) {
 
 async function verifyGoogleIdToken(idToken) {
     if (!GOOGLE_OAUTH_CLIENT_ID) {
-        return { ok: false, error: 'Google sign-in is not configured on server.' };
+        return { ok: false, error: 'Google sign-in is not configured on server. Missing GOOGLE_OAUTH_CLIENT_ID environment variable.' };
     }
 
     if (!idToken) {
