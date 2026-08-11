@@ -6,15 +6,15 @@ users, salons, salon_users, staff, services, staff_services, customers, appointm
 
 ## Routes created
 
-The single-page app exposes role-specific screens for customers, salon owners, staff, and super admins. Customers see salon listing and booking views; owners see dashboard, bookings, customers, services, staff, offers, sales, memberships, and settings; staff see assigned schedule, appointments, and basic customer information; super admins see platform admin and salon listing views. The Express server also exposes `/api/health` and falls all direct routes back to the SPA.
+The single-page app exposes marketing, owner dashboard, appointments, customers, services, staff, offers, sales, membership, settings/onboarding, super admin, and public salon booking views. The Express server also exposes `/api/health` and falls all direct routes back to the SPA.
 
 ## Authentication flow
 
-The Supabase schema is designed for Supabase Authentication. Owner signup should create an `auth.users` account, then a `users` row, `salons` row, and `salon_users` owner row. Staff accounts are linked through `salon_users` with role `staff`; super admins are users with role `super_admin`. Customer-facing booking can remain app-less and browser-based in V1.
+The Supabase schema is designed for Supabase Authentication. Owner signup should create an `auth.users` account, then a `users` row, `salons` row, and `salon_users` owner row. Staff accounts are linked through `salon_users` with role `staff`; super admins are users with role `super_admin`.
 
 ## RLS policies
 
-RLS is enabled on every app table. `is_super_admin()` permits platform-level access. `has_salon_access(salon_id)` scopes owners and staff to only salons where they have an active `salon_users` membership. Public read policies are limited to active salon/service/offer data needed for salon listing and public booking pages.
+RLS is enabled on every app table. `is_super_admin()` permits platform-level access. `has_salon_access(salon_id)` scopes owners and staff to only salons where they have an active `salon_users` membership. Public read policies are limited to active salon/service/offer data needed for the public booking page.
 
 ## Remaining external credentials
 
