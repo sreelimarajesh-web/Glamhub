@@ -1,50 +1,31 @@
-# GlamHub
+# SalonMate
 
-## Setup
+Production-ready MVP scaffold for a Palakkad, Kerala salon management SaaS. The app is Supabase/PostgreSQL-ready and keeps V1 focused on fast WhatsApp-to-confirmed-appointment workflows.
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Copy env template and add your MongoDB URL + Google OAuth Client ID:
-   ```bash
-   cp .env.example .env
-   ```
-3. Start the app:
-   ```bash
-   npm start
-   ```
-   The server loads `.env` automatically at startup.
-4. Open `http://localhost:3000`.
-5. In `index.html`, set your browser client id before `js/app.js` loads:
-   ```html
-   <script>
-     window.GOOGLE_OAUTH_CLIENT_ID = '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com';
-   </script>
-   ```
+## Run locally
 
-## MongoDB storage
+```bash
+npm install
+npm start
+```
 
-- Booking submissions are stored in MongoDB via `POST /api/bookings`.
-- Booking submission now requires a valid Google Sign-In ID token.
-- Admin-only booking list is fetched from MongoDB via `GET /api/bookings`.
-- Admin auth headers used by the frontend:
-  - `x-admin-username`
-  - `x-admin-password`
+Open `http://localhost:3000`.
 
+## Supabase
 
-## User flow
+Apply `supabase/migrations/202608110001_salonmate_mvp.sql` in a Supabase project. It creates the relational schema, indexes, subscription plans, RLS helper functions, RLS policies, and fictional Palakkad-area demo salon records.
 
-- Home page (`/`) now shows only one **Booking** button.
-- Booking button opens `/login.html` for Google sign-in.
-- After login, users are redirected to `/user.html` where they can:
-  - create a booking
-  - view only their own booking details
-  - reschedule their booking
-  - cancel their booking
+Required browser-safe env when wiring the frontend to Supabase Auth:
 
-### User APIs
+```bash
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_ANON_KEY=...
+```
 
-- `GET /api/my-bookings` (Google Bearer token required)
-- `PATCH /api/my-bookings/:id/reschedule` (Google Bearer token required)
-- `PATCH /api/my-bookings/:id/cancel` (Google Bearer token required)
+Never expose Supabase service-role keys in the browser.
+
+## V1 external integrations left intentionally manual
+
+- WhatsApp uses click-to-chat links. The `src/lib/whatsapp.ts` adapter is the future boundary for WhatsApp Business API.
+- Payment gateway is not implemented. Super Admin can manually change subscription records until Razorpay/Stripe is added.
+- Supabase email/SMS settings must be configured in the target Supabase project for production auth.
