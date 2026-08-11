@@ -22,10 +22,10 @@ VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
 ```
 
-Never expose Supabase service-role keys in the browser.
+The current browser MVP uses a single `src/app.js` implementation so there is no competing React/vanilla frontend conflict. Never expose Supabase service-role keys in the browser.
 
 ## V1 external integrations left intentionally manual
 
-- WhatsApp uses click-to-chat links. The `src/lib/whatsapp.ts` adapter is the future boundary for WhatsApp Business API.
+- WhatsApp uses click-to-chat links in `src/app.js`; keep that click-to-chat boundary separate when adding the future WhatsApp Business API adapter.
 - Payment gateway is not implemented. Super Admin can manually change subscription records until Razorpay/Stripe is added.
 - Supabase email/SMS settings must be configured in the target Supabase project for production auth.
