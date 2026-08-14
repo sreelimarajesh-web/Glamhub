@@ -26,10 +26,10 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 ## Authentication adapters
 
-- Sign-in remains a single Google OAuth action for customers and salon owners.
+- Sign-in and Google signup reuse the existing static `login.html` Google Identity Services page for both customers and salon owners, avoiding host-specific route rewrites and 404s.
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
 - The selected `customer` or `salon_owner` role is preserved in both Google OAuth state and email-signup payloads.
-- The local browser build simulates both paths. Production should connect Google and email signup to Supabase Auth, validate the role server-side, and never persist raw passwords in application tables.
+- The selected role is passed to `/login`, validated against OAuth state, and written into the shared SPA session after Google returns. Email signup remains a local demo path. Production should connect both paths to Supabase Auth, validate the role server-side, and never persist raw passwords in application tables.
 
 ## V1 booking rules
 

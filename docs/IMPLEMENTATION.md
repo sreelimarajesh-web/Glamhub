@@ -12,7 +12,7 @@ The single-page app exposes role-specific screens for customers, salon owners, a
 
 ## Authentication flow
 
-The browser demo provides Google sign-in plus a dedicated email signup form. Both paths begin with `customer` or `salon_owner` selection and persist that value in the simulated registration/session payload. Owner signup additionally creates the initial salon from the supplied salon name and location. Production should delegate password handling to Supabase Auth, validate OAuth state and role metadata server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
+The SPA sends Google sign-in and Google signup to the existing static `login.html` page so the flow works on Express and static hosts without an extensionless-route rewrite. It carries `customer` or `salon_owner` in session-backed OAuth state; `js/login.js` validates the callback role, reads the Google profile, creates the shared SalonMate session, and returns to the SPA. A dedicated email signup form remains available for the local demo, with owner-only salon name/location fields. Production should delegate identity and password handling to Supabase Auth, verify Google tokens server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
 
 ## Booking safeguards
 
