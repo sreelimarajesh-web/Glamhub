@@ -19,9 +19,9 @@ function handleGoogleSignIn(response) {
         const [, payloadSegment] = token.split('.');
         const payload = JSON.parse(atob(payloadSegment));
 
-        sessionStorage.setItem('glamhubGoogleIdToken', token);
-        sessionStorage.setItem('glamhubUserName', payload?.name || '');
-        sessionStorage.setItem('glamhubUserEmail', payload?.email || '');
+        sessionStorage.setItem('salonmateGoogleIdToken', token);
+        sessionStorage.setItem('salonmateUserName', payload?.name || '');
+        sessionStorage.setItem('salonmateUserEmail', payload?.email || '');
 
         renderAuthStatus('Login successful. Redirecting...', true);
         window.location.href = 'user.html';

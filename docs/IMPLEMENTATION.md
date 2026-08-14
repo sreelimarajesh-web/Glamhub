@@ -2,17 +2,21 @@
 
 ## Database tables created
 
-Core SaaS tables: users, customers, salons, salon_users, staff, services, staff_services, appointments, appointment_services, sales, payments, offers, memberships, membership_plans, message_templates, messages, subscriptions, subscription_plans, salon_settings, working_hours.
+Core SaaS tables: users, customers, salons, salon_users, staff, services, staff_services, appointments, appointment_services, offers, message_templates, messages, salon_settings, working_hours, salon_closures, and slot_holds. Legacy sales/subscription tables remain in the initial migration but are not exposed in the focused V1 UI.
 
 Marketing extension tables: customer_visits, customer_segments, campaigns, campaign_recipients, offer_redemptions, favorites, reviews, notifications.
 
 ## Routes / screens created
 
-The single-page app exposes role-specific screens for customers, salon owners, and admins. Customers get registration, home, explore/salon listing, salon profile, booking, my bookings, my offers, and profile. Salon owners get dashboard, bookings, customer CRM, segments, targeted offers, marketing campaigns, and settings. Admins get platform dashboard, salons, customers, bookings, campaigns, and settings.
+The single-page app exposes role-specific screens for customers, salon owners, and admins. Customers get Google access, simple salon discovery, salon details, booking for self/family, booking activity, offers, and profile. Owners get a daily/upcoming appointment calendar, walk-in entry, customer CRM, offers/marketing, and one consolidated salon setup screen. Admins get reports plus salon, account, booking, offer-rule, and app-banner controls.
 
 ## Authentication flow
 
-The Supabase schema is designed for Supabase Authentication with roles CUSTOMER, SALON_OWNER, and ADMIN. Customer registration uses mobile number as the primary customer identifier. Owner signup should create an `auth.users` account, then a `users` row, `salons` row, and `salon_users` owner row. Customer-facing booking remains browser-based in V1.
+The browser demo provides Google sign-in plus a dedicated email signup form. Both paths begin with `customer` or `salon_owner` selection and persist that value in the simulated registration/session payload. Owner signup additionally creates the initial salon from the supplied salon name and location. Production should delegate password handling to Supabase Auth, validate OAuth state and role metadata server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
+
+## Booking safeguards
+
+The UI removes booked, held, holiday, and owner-blocked slots; automatically assigns an available staff member when requested; and applies the salon cancellation cutoff. Slot holds expire after five minutes. The hardening migration adds durable holds/closures and a trigger that rejects overlapping appointment time ranges, so tenant safety does not depend on the browser.
 
 ## RLS policies
 
@@ -25,11 +29,11 @@ The MVP demonstrates: customer books a facial, customer becomes eligible for an 
 ## Remaining external credentials
 
 - Supabase project URL and anon key.
-- Supabase SMTP/OTP settings for production authentication.
+- Supabase Google OAuth credentials and redirect configuration.
 - WhatsApp Business API credentials for automated messaging in V2.
 - SMS/email provider credentials for later channels.
 - Razorpay or Stripe keys for subscription payments in V2.
 
 ## Intentionally left for V2
 
-AI recommendations, loyalty points, payment gateway automation, automated WhatsApp Business API sending, gift cards, salon chains/branches, advanced analytics, Malayalam translation files, and staff mobile applications.
+Memberships, loyalty points, in-app chat, online payments, AI recommendations, automated WhatsApp Business API sending, gift cards, salon chains/branches, advanced analytics, Malayalam translation files, and staff mobile applications.
