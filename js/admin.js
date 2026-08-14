@@ -6,7 +6,7 @@ const adminErrorMessage = document.getElementById('admin-error-message');
 const adminLogoutButton = document.getElementById('admin-logout-button');
 const bookingDetailPanel = document.getElementById('booking-detail-panel');
 
-const ADMIN_SESSION_KEY = 'glamhub_admin_logged_in';
+const ADMIN_SESSION_KEY = 'salonmate_admin_logged_in';
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'adminhub';
 const BOOKINGS_API_URL = '/api/bookings';

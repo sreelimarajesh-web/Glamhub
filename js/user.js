@@ -8,9 +8,9 @@ const bookingsList = document.getElementById('my-bookings-list');
 const BOOKINGS_API_URL = '/api/bookings';
 const MY_BOOKINGS_API_URL = '/api/my-bookings';
 
-const googleIdToken = sessionStorage.getItem('glamhubGoogleIdToken') || '';
-const signedInUserName = sessionStorage.getItem('glamhubUserName') || '';
-const signedInUserEmail = sessionStorage.getItem('glamhubUserEmail') || '';
+const googleIdToken = sessionStorage.getItem('salonmateGoogleIdToken') || '';
+const signedInUserName = sessionStorage.getItem('salonmateUserName') || '';
+const signedInUserEmail = sessionStorage.getItem('salonmateUserEmail') || '';
 
 if (!googleIdToken) {
     window.location.replace('login.html');
@@ -261,9 +261,9 @@ bookingForm.addEventListener('submit', async (event) => {
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
-    sessionStorage.removeItem('glamhubGoogleIdToken');
-    sessionStorage.removeItem('glamhubUserName');
-    sessionStorage.removeItem('glamhubUserEmail');
+    sessionStorage.removeItem('salonmateGoogleIdToken');
+    sessionStorage.removeItem('salonmateUserName');
+    sessionStorage.removeItem('salonmateUserEmail');
     window.location.replace('login.html');
 });
 
