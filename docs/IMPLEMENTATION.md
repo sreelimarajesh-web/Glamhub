@@ -8,11 +8,11 @@ Marketing extension tables: customer_visits, customer_segments, campaigns, campa
 
 ## Routes / screens created
 
-The single-page app exposes role-specific screens for customers, salon owners, and admins. Customers get OTP access, simple salon discovery, salon details, booking for self/family, booking activity, offers, and profile. Owners get a daily/upcoming appointment calendar, walk-in entry, customer CRM, offers/marketing, and one consolidated salon setup screen. Admins get reports plus salon, account, booking, offer-rule, and app-banner controls.
+The single-page app exposes role-specific screens for customers, salon owners, and admins. Customers get Google access, simple salon discovery, salon details, booking for self/family, booking activity, offers, and profile. Owners get a daily/upcoming appointment calendar, walk-in entry, customer CRM, offers/marketing, and one consolidated salon setup screen. Admins get reports plus salon, account, booking, offer-rule, and app-banner controls.
 
 ## Authentication flow
 
-The browser demo offers role-aware hybrid authentication without pretending to contact an external provider. Customers can simulate Google, WhatsApp OTP (`123456`), email magic link, or secondary SMS OTP; owners can simulate email/password with remember-me and reset affordances or Google. Production should replace these local adapters with Supabase Google OAuth, email/password, magic-link, and supported WhatsApp/SMS delivery. Customer registration uses mobile as the primary identifier. Owner signup should create an `auth.users` account, then `users`, `salons`, and `salon_users` rows.
+The browser demo exposes one Google action for both login and registration. Before redirecting, the user selects `customer` or `salon_owner`; the simulated callback stores that role alongside the Google profile name and email. Production should validate the OAuth state, upsert the `auth.users`/`users` profile, and create `salons` plus `salon_users` rows when the selected role is `salon_owner`.
 
 ## Booking safeguards
 
@@ -29,7 +29,7 @@ The MVP demonstrates: customer books a facial, customer becomes eligible for an 
 ## Remaining external credentials
 
 - Supabase project URL and anon key.
-- Supabase SMTP/OTP settings for production authentication.
+- Supabase Google OAuth credentials and redirect configuration.
 - WhatsApp Business API credentials for automated messaging in V2.
 - SMS/email provider credentials for later channels.
 - Razorpay or Stripe keys for subscription payments in V2.

@@ -24,11 +24,11 @@ VITE_SUPABASE_ANON_KEY=...
 
 The current browser MVP uses a single `src/app.js` implementation so there is no competing React/vanilla frontend conflict. Never expose Supabase service-role keys in the browser.
 
-## Authentication adapters
+## Authentication adapter
 
-- Customers see Google first, followed by WhatsApp OTP or an email magic link; SMS remains a secondary fallback.
-- Shop owners use email/password with remember-me and password-reset affordances, while Google remains available.
-- The local browser build simulates provider completion and clearly labels demo mode. Production should connect these actions to Supabase Google OAuth, email/password, magic-link, and phone-provider methods.
+- Google OAuth is the only login and registration mechanism for customers and salon owners.
+- The selected `customer` or `salon_owner` role is carried in the OAuth state/session payload; name and email come from the Google profile.
+- The local browser build simulates the one-click Google callback and labels demo mode clearly. Production should replace this adapter with Supabase Google OAuth and validate the returned role server-side.
 
 ## V1 booking rules
 
@@ -42,4 +42,4 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 - WhatsApp uses click-to-chat links in `src/app.js`; campaigns are tracked in-app first so the future WhatsApp Business API adapter can be added without changing the owner workflow.
 - Online payment is intentionally not implemented; V1 uses pay at salon.
-- Supabase email/SMS settings must be configured in the target Supabase project for production auth.
+- Supabase Google provider settings and OAuth redirect URLs must be configured for production authentication.
