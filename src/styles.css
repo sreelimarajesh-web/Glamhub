@@ -45,6 +45,8 @@ main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .full-button { width: 100%; }
 .demo-note { color: var(--muted); font-size: .76rem; padding: 8px 0; }
 .demo-banner { background: #0f172a; border-radius: 999px; bottom: 18px; color: #e2e8f0; font-size: .76rem; left: 50%; padding: 9px 14px; position: fixed; transform: translateX(-50%); white-space: nowrap; z-index: 30; }
+.demo-card-note { border-top: 1px solid #e2e8f0; color: var(--muted); font-size: .72rem; margin-top: 20px; padding-top: 14px; text-align: center; }
+.auth-notice { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; color: #1d4ed8; font-size: .82rem; margin-bottom: 16px; padding: 10px 12px; }
 .auth-switch { margin: 20px 0 0 !important; text-align: center; }
 .auth-switch button { background: transparent; color: var(--primary); min-height: 0; padding: 0 3px; }
 .future-auth { border-top: 1px solid var(--border); margin-top: 24px; padding-top: 24px; position: relative; }
@@ -61,6 +63,24 @@ main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .role-segment legend { color: #344054; font-size: .86rem; font-weight: 600; margin-bottom: 8px; padding: 0; }
 .role-segment button { background: transparent; color: #475569; min-height: 42px; }
 .role-segment button.active { background: white; box-shadow: 0 1px 3px rgba(15,23,42,.12); color: var(--primary); }
+.google-button { background: white; border: 1px solid #cbd5e1; color: #0f172a; gap: 10px; width: 100%; }
+.google-button:hover { background: #f8fafc; border-color: #94a3b8; }
+.google-mark { align-items: center; background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0); border-radius: 50%; color: white; display: inline-flex; font-weight: 700; height: 22px; justify-content: center; width: 22px; }
+.auth-divider { align-items: center; color: #94a3b8; display: flex; font-size: .76rem; gap: 12px; margin: 18px 0; }
+.auth-divider::before, .auth-divider::after { background: #e2e8f0; content: ''; flex: 1; height: 1px; }
+.channel-tabs { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; display: grid; gap: 3px; grid-template-columns: 1fr 1fr; margin-bottom: 16px; padding: 3px; }
+.channel-tabs button { background: transparent; color: #64748b; font-size: .8rem; min-height: 36px; padding: 7px; }
+.channel-tabs button.active { background: white; box-shadow: 0 1px 2px rgba(15,23,42,.1); color: var(--primary); }
+.sms-fallback, .owner-login-options button { background: transparent; color: var(--primary); font-size: .78rem; margin-top: 8px; min-height: 30px; padding: 4px; width: 100%; }
+.sms-fallback:hover, .owner-login-options button:hover { background: var(--primary-soft); }
+.fallback-notice, .delivery-label { color: var(--muted); font-size: .8rem; margin: 0 0 10px; }
+.owner-login-options { align-items: center; display: flex; justify-content: space-between; margin: -2px 0 14px; }
+.owner-login-options button { margin: 0; width: auto; }
+.remember-toggle { align-items: center; display: flex; font-size: .78rem; gap: 7px; margin: 0; }
+.remember-toggle input { height: 16px; margin: 0; width: 16px; }
+.magic-link-state { text-align: center; }
+.magic-link-state p { color: var(--muted); }
+.auth-success-icon { align-items: center; background: #dcfce7; border-radius: 50%; color: #15803d; display: flex; font-size: 1.3rem; font-weight: 700; height: 52px; justify-content: center; margin: 0 auto 12px; width: 52px; }
 .admin-access { background: transparent; color: var(--muted); font-size: .78rem; margin: 10px auto 0; min-height: 30px; padding: 4px; width: 100%; }
 .admin-access:hover { background: transparent; color: var(--primary); }
 h1 { font-size: clamp(1.7rem, 4vw, 2.25rem); margin: 5px 0 8px; }

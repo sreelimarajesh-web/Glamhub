@@ -1,6 +1,6 @@
 # SalonMate
 
-Production-ready MVP scaffold for a Palakkad, Kerala salon booking and targeted marketing SaaS. V1 is deliberately limited to phone/OTP access, salon search, services, available-slot booking, walk-ins, an owner appointment calendar, WhatsApp confirmation links, and targeted offers.
+Production-ready MVP scaffold for a Palakkad, Kerala salon booking and targeted marketing SaaS. V1 supports hybrid demo authentication, salon search, services, available-slot booking, walk-ins, an owner appointment calendar, WhatsApp confirmation links, and targeted offers.
 
 ## Run locally
 
@@ -23,6 +23,12 @@ VITE_SUPABASE_ANON_KEY=...
 ```
 
 The current browser MVP uses a single `src/app.js` implementation so there is no competing React/vanilla frontend conflict. Never expose Supabase service-role keys in the browser.
+
+## Authentication adapters
+
+- Customers see Google first, followed by WhatsApp OTP or an email magic link; SMS remains a secondary fallback.
+- Shop owners use email/password with remember-me and password-reset affordances, while Google remains available.
+- The local browser build simulates provider completion and clearly labels demo mode. Production should connect these actions to Supabase Google OAuth, email/password, magic-link, and phone-provider methods.
 
 ## V1 booking rules
 

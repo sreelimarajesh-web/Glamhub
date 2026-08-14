@@ -12,7 +12,7 @@ The single-page app exposes role-specific screens for customers, salon owners, a
 
 ## Authentication flow
 
-The browser demo uses OTP `123456`; it never pretends to send a real message. Production should replace that adapter with Supabase Phone Auth. Customer registration uses mobile as the primary identifier. Owner signup should create an `auth.users` account, then `users`, `salons`, and `salon_users` rows.
+The browser demo offers role-aware hybrid authentication without pretending to contact an external provider. Customers can simulate Google, WhatsApp OTP (`123456`), email magic link, or secondary SMS OTP; owners can simulate email/password with remember-me and reset affordances or Google. Production should replace these local adapters with Supabase Google OAuth, email/password, magic-link, and supported WhatsApp/SMS delivery. Customer registration uses mobile as the primary identifier. Owner signup should create an `auth.users` account, then `users`, `salons`, and `salon_users` rows.
 
 ## Booking safeguards
 
