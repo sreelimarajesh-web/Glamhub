@@ -12,7 +12,7 @@ The single-page app exposes role-specific screens for customers, salon owners, a
 
 ## Authentication flow
 
-The SPA sends Google sign-in and Google signup to the existing static `login.html` page so the flow works on Express and static hosts without an extensionless-route rewrite. It carries `customer` or `salon_owner` in session-backed OAuth state; `js/login.js` validates the callback role, reads the Google profile, creates the shared SalonMate session, and returns to the SPA. A dedicated email signup form remains available for the local demo, with owner-only salon name/location fields. Production should delegate identity and password handling to Supabase Auth, verify Google tokens server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
+The SPA renders the official Google Identity Services button directly in its authentication card. It stores `customer` or `salon_owner` in session-backed OAuth state, reads the returned Google profile, and opens the correct role experience without visiting an intermediate SalonMate login page. The standalone `login.html` integration is retained only for direct legacy links. A dedicated email signup form remains available for the local demo, with owner-only salon name/location fields. Production should delegate identity and password handling to Supabase Auth, verify Google tokens server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
 
 ## Booking safeguards
 

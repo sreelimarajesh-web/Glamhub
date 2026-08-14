@@ -55,11 +55,9 @@ main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .auth-role-cards button { align-items: flex-start; border: 1px solid #e2e8f0; border-radius: 14px; display: flex; flex-direction: column; min-height: 76px; padding: 12px 14px; text-align: left; }
 .auth-role-cards button.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
 .auth-role-cards small { color: var(--muted); font-weight: 400; margin-top: 3px; }
-.google-button { background: white; border: 1px solid #cbd5e1; color: #0f172a; gap: 10px; width: 100%; }
-.google-button:hover { background: #f8fafc; border-color: #94a3b8; }
-.google-primary { font-size: .95rem; min-height: 48px; }
-.google-logo { display: inline-flex; height: 18px; width: 18px; }
-.google-logo svg { height: 100%; width: 100%; }
+.google-auth-mount { align-items: center; color: var(--muted); display: flex; justify-content: center; min-height: 44px; width: 100%; }
+.google-auth-mount > div, .google-auth-mount iframe { margin: auto !important; max-width: 100%; }
+.oauth-status { color: var(--danger); font-size: .78rem; margin: 8px 0 0; text-align: center; }
 .oauth-disclaimer { color: var(--muted); font-size: .72rem; margin: 12px auto 0; max-width: 320px; text-align: center; }
 .auth-divider { align-items: center; color: #94a3b8; display: flex; font-size: .72rem; gap: 12px; margin: 18px 0; }
 .auth-divider::before, .auth-divider::after { background: #e2e8f0; content: ''; flex: 1; height: 1px; }
