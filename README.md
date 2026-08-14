@@ -24,11 +24,12 @@ VITE_SUPABASE_ANON_KEY=...
 
 The current browser MVP uses a single `src/app.js` implementation so there is no competing React/vanilla frontend conflict. Never expose Supabase service-role keys in the browser.
 
-## Authentication adapter
+## Authentication adapters
 
-- Google OAuth is the only login and registration mechanism for customers and salon owners.
-- The selected `customer` or `salon_owner` role is carried in the OAuth state/session payload; name and email come from the Google profile.
-- The local browser build simulates the one-click Google callback and labels demo mode clearly. Production should replace this adapter with Supabase Google OAuth and validate the returned role server-side.
+- Sign-in remains a single Google OAuth action for customers and salon owners.
+- New users can open a dedicated Create account form; salon owners also provide their salon name and location.
+- The selected `customer` or `salon_owner` role is preserved in both Google OAuth state and email-signup payloads.
+- The local browser build simulates both paths. Production should connect Google and email signup to Supabase Auth, validate the role server-side, and never persist raw passwords in application tables.
 
 ## V1 booking rules
 

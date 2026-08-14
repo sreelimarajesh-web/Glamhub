@@ -44,6 +44,9 @@ main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .auth-card > p { color: var(--muted); margin: 0 0 24px; }
 .full-button { width: 100%; }
 .demo-card-note { border-top: 1px solid #e2e8f0; color: var(--muted); font-size: .72rem; margin-top: 20px; padding-top: 14px; text-align: center; }
+.auth-mode-tabs { background: #f1f5f9; border-radius: 10px; display: grid; gap: 3px; grid-template-columns: 1fr 1fr; margin-bottom: 24px; padding: 3px; }
+.auth-mode-tabs button { background: transparent; color: var(--muted); min-height: 38px; padding: 7px; }
+.auth-mode-tabs button.active { background: white; box-shadow: 0 1px 3px rgba(15,23,42,.12); color: var(--primary); }
 .role-segment { background: #f1f5f9; border: 0; border-radius: 12px; display: grid; gap: 4px; grid-template-columns: 1fr 1fr; margin: 0 0 20px; padding: 4px; }
 .role-segment legend { color: #344054; font-size: .86rem; font-weight: 600; margin-bottom: 8px; padding: 0; }
 .role-segment button { background: transparent; color: #475569; min-height: 42px; }
@@ -58,6 +61,10 @@ main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .google-logo { display: inline-flex; height: 18px; width: 18px; }
 .google-logo svg { height: 100%; width: 100%; }
 .oauth-disclaimer { color: var(--muted); font-size: .72rem; margin: 12px auto 0; max-width: 320px; text-align: center; }
+.auth-divider { align-items: center; color: #94a3b8; display: flex; font-size: .72rem; gap: 12px; margin: 18px 0; }
+.auth-divider::before, .auth-divider::after { background: #e2e8f0; content: ''; flex: 1; height: 1px; }
+.terms-check { align-items: flex-start; display: flex; font-size: .76rem; gap: 8px; margin: 2px 0 16px; }
+.terms-check input { height: 16px; margin: 1px 0 0; width: 16px; }
 h1 { font-size: clamp(1.7rem, 4vw, 2.25rem); margin: 5px 0 8px; }
 h2 { font-size: 1.25rem; margin: 26px 0 14px; }
 h3 { margin: 5px 0 8px; }

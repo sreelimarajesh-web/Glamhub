@@ -12,7 +12,7 @@ The single-page app exposes role-specific screens for customers, salon owners, a
 
 ## Authentication flow
 
-The browser demo exposes one Google action for both login and registration. Before redirecting, the user selects `customer` or `salon_owner`; the simulated callback stores that role alongside the Google profile name and email. Production should validate the OAuth state, upsert the `auth.users`/`users` profile, and create `salons` plus `salon_users` rows when the selected role is `salon_owner`.
+The browser demo provides Google sign-in plus a dedicated email signup form. Both paths begin with `customer` or `salon_owner` selection and persist that value in the simulated registration/session payload. Owner signup additionally creates the initial salon from the supplied salon name and location. Production should delegate password handling to Supabase Auth, validate OAuth state and role metadata server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
 
 ## Booking safeguards
 
