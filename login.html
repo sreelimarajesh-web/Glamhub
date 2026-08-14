@@ -30,9 +30,10 @@
         </main>
     </div>
 
-    <script src="/config.js"></script>
+    <script src="config.js"></script>
     <script>
-        window.GOOGLE_OAUTH_CLIENT_ID = window.SALONMATE_CONFIG?.googleOAuthClientId || '';
+        // Google OAuth client IDs are public identifiers. The fallback keeps static hosting working.
+        window.GOOGLE_OAUTH_CLIENT_ID = window.SALONMATE_CONFIG?.googleOAuthClientId || '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com';
     </script>
     <script id="google-gsi-client" src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="js/login.js"></script>
