@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
+  --primary: #1e56e3;
+  --primary-dark: #1645bd;
   --primary-soft: #eff6ff;
   --text: #172033;
   --muted: #667085;
@@ -31,6 +31,17 @@ nav button.active { background: var(--primary-soft); color: var(--primary); }
 .role-picker select { margin: 0; min-width: 130px; }
 .account-actions { align-items: center; display: flex; font-size: .82rem; gap: 10px; white-space: nowrap; }
 .account-actions button { min-height: 36px; padding: 7px 10px; }
+.user-menu { position: relative; }
+.user-menu summary { align-items: center; border-radius: 999px; cursor: pointer; display: flex; gap: 9px; list-style: none; padding: 4px 6px 4px 4px; }
+.user-menu summary::-webkit-details-marker { display: none; }
+.user-menu summary:hover { background: var(--primary-soft); }
+.nav-avatar { align-items: center; background: var(--primary); border-radius: 50%; color: white; display: inline-flex; font-size: .72rem; font-weight: 700; height: 34px; justify-content: center; width: 34px; }
+.nav-user-name { font-size: .82rem; font-weight: 600; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-chevron { color: var(--muted); font-size: .8rem; }
+.user-menu-popover { background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 12px 28px rgba(15,23,42,.14); min-width: 190px; padding: 6px; position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; }
+.user-menu-popover button { background: transparent; color: var(--text); gap: 9px; justify-content: flex-start; min-height: 38px; padding: 8px 10px; width: 100%; }
+.user-menu-popover button:hover { background: #f8fafc; }
+.user-menu-popover .menu-logout { color: var(--danger); }
 main { margin: auto; max-width: 1160px; padding: 28px 18px 96px; }
 .auth-page { align-items: stretch; display: grid; grid-template-columns: 1fr minmax(360px, 480px); max-width: 1080px; min-height: 100vh; padding: 7vh 24px; }
 .auth-intro { align-self: center; max-width: 520px; padding: 40px; }
@@ -154,14 +165,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .status-cancelled, .status-no-show { background: #fee2e2; color: #b91c1c; }
 .status-pending, .status-confirmed { background: #dbeafe; color: #1d4ed8; }
 .booking-card .actions:empty { display: none; }
-.profile-heading { align-items: center; display: flex; gap: 16px; margin-bottom: 22px; }
-.profile-heading h1, .profile-heading p { margin: 2px 0; }
-.profile-avatar { align-items: center; background: var(--primary); border-radius: 50%; color: white; display: flex; font-size: 1.2rem; font-weight: 700; height: 64px; justify-content: center; min-width: 64px; }
+.profile-hero { align-items: center; background: white; border: 1px solid #f1f5f9; border-radius: 20px; box-shadow: 0 2px 8px rgba(15,23,42,.05); display: flex; gap: 20px; padding: 24px; }
+.profile-avatar { align-items: center; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 6px var(--primary-soft); color: white; display: flex; font-size: 1.35rem; font-weight: 700; height: 72px; justify-content: center; min-width: 72px; }
+.profile-identity h1 { font-size: clamp(1.6rem, 4vw, 2rem); margin: 2px 0 5px; }
+.profile-identity > button { margin-top: 12px; }
+.profile-meta { align-items: center; color: var(--muted); display: flex; font-size: .86rem; gap: 8px; margin: 0; }
+.profile-meta i { color: #cbd5e1; font-style: normal; }
 .profile-metrics { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.profile-metrics > div { background: white; border: 1px solid #f1f5f9; border-radius: 16px; box-shadow: 0 1px 3px rgba(15,23,42,.06); display: grid; gap: 4px; padding: 16px; }
-.profile-metrics strong { font-size: 1.2rem; }
+.profile-metrics > div { align-items: center; background: white; border: 1px solid #f1f5f9; border-radius: 16px; box-shadow: 0 2px 7px rgba(15,23,42,.05); display: flex; gap: 13px; margin-top: 16px; padding: 18px; }
+.profile-metrics > div > div { display: grid; gap: 3px; }
+.profile-metrics strong { color: var(--text); font-size: 1.5rem; }
 .profile-metrics span { color: var(--muted); font-size: .78rem; }
-.profile-actions { margin: 14px 0 26px; }
+.metric-icon { align-items: center; background: var(--primary-soft); border-radius: 11px; color: var(--primary) !important; display: flex; font-size: 1.15rem !important; font-weight: 700; height: 42px; justify-content: center; min-width: 42px; }
+.favorite-heading { margin-top: 34px; }
+.favorites-empty { align-items: center; background: white; border: 1px dashed #cbd5e1; border-radius: 18px; display: flex; flex-direction: column; padding: 40px 20px; text-align: center; }
+.favorites-empty h3 { font-size: 1.05rem; margin: 12px 0 3px; }
+.favorites-empty p { color: var(--muted); margin: 0 0 18px; }
+.empty-heart { align-items: center; background: var(--primary-soft); border-radius: 50%; color: var(--primary); display: flex; font-size: 1.8rem; height: 62px; justify-content: center; width: 62px; }
 .photo-preview, .salon-img, .profile-cover { background-color: #e2e8f0; border-radius: 16px; height: 155px; margin: 8px 0 12px; overflow: hidden; position: relative; }
 .photo-preview { max-width: 420px; }
 .photo-preview img, .profile-cover img { height: 100%; object-fit: cover; width: 100%; }
@@ -180,8 +200,7 @@ footer { display: none; }
   .auth-intro h1 { font-size: 2.35rem; }
   .auth-points { display: none; }
   .auth-card { border-radius: 20px; padding: 24px 20px; }
-  .top { align-items: flex-start; padding: 10px 12px; }
-  .top.customer { display: none; }
+  .top { align-items: center; padding: 10px 12px; }
   .top nav { display: none; }
   .role-picker { flex-direction: column; gap: 2px; }
   main { padding: 20px 12px 92px; }
@@ -202,5 +221,10 @@ footer { display: none; }
   footer button small { font-weight: 600; }
   footer button.active { background: var(--primary-soft); color: var(--primary); }
   .auth-role-cards { grid-template-columns: 1fr 1fr; }
-  .profile-metrics { gap: 8px; }
+  .nav-user-name { max-width: 92px; }
+  .profile-hero { align-items: flex-start; padding: 20px 18px; }
+  .profile-avatar { height: 62px; min-width: 62px; }
+  .profile-meta { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .profile-meta i { display: none; }
+  .profile-metrics { gap: 8px; grid-template-columns: 1fr; }
 }
