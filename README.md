@@ -26,6 +26,7 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 ## Authentication adapters
 
+- The public app supports two entry points: contextual authentication from **Book Now**, which preserves and resumes the booking draft, and a universal header login for Customer or Salon Owner access. The complete state machine and modal contract are documented in [`docs/AUTH_INTERACTION.md`](docs/AUTH_INTERACTION.md).
 - Sign-in and Google signup render Google Identity Services directly inside the SPA authentication card, so one click opens Google without an intermediate SalonMate login page.
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
 - Manual email/password sign-in is available alongside Google, including a password-recovery affordance.
