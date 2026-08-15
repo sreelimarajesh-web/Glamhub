@@ -2,17 +2,17 @@
 
 ## Database tables created
 
-Core SaaS tables: users, customers, salons, salon_users, staff, services, staff_services, appointments, appointment_services, offers, message_templates, messages, salon_settings, working_hours, salon_closures, and slot_holds. Legacy sales/subscription tables remain in the initial migration but are not exposed in the focused V1 UI.
+Core SaaS tables: identity_accounts, identity_roles, users, customers, salons, salon_users, staff, services, staff_services, appointments, appointment_services, offers, message_templates, messages, salon_settings, working_hours, salon_closures, and slot_holds. `identity_accounts` is the canonical one-email/one-user identity; `identity_roles` supplies multi-role membership. Legacy sales/subscription tables remain in the initial migration but are not exposed in the focused V1 UI.
 
 Marketing extension tables: customer_visits, customer_segments, campaigns, campaign_recipients, offer_redemptions, favorites, reviews, notifications.
 
 ## Routes / screens created
 
-The single-page app exposes role-specific screens for customers, salon owners, and admins. Customers get Google access, simple salon discovery, salon details, booking for self/family, booking activity, offers, and profile. Owners get a daily/upcoming appointment calendar, walk-in entry, customer CRM, offers/marketing, and one consolidated salon setup screen. Admins get reports plus salon, account, booking, offer-rule, and app-banner controls.
+The single-page app exposes role-specific screens for customers and salon owners. Customers get Google or manual sign-in, salon discovery, salon details, booking for self/family, booking activity, offers, and profile. Owners get a daily/upcoming appointment calendar, walk-in entry, customer CRM, offers/marketing, and one consolidated salon setup screen. Admin authentication is isolated at `/admin/login`; the server protects `/admin/dashboard` and all other `/admin/*` routes with ADMIN RBAC middleware.
 
 ## Authentication flow
 
-The SPA renders the official Google Identity Services button directly in its authentication card. It stores `customer` or `salon_owner` in session-backed OAuth state, reads the returned Google profile, and opens the correct role experience without visiting an intermediate SalonMate login page. The standalone `login.html` integration is retained only for direct legacy links. A dedicated email signup form remains available for the local demo, with owner-only salon name/location fields. Production should delegate identity and password handling to Supabase Auth, verify Google tokens server-side, upsert the `users` profile, and create `salons` plus `salon_users` rows for a new `salon_owner`.
+The SPA renders Google and manual email/password sign-in in both role contexts. Signup normalizes email before enforcing uniqueness and returns “An account with this email already exists. Please sign in instead.” for duplicates. A single identity owns a role array locally and `identity_roles` in Supabase. Owner signup requires salon name/location. Production should delegate credentials to Supabase Auth, verify Google tokens server-side, call `register_current_identity`, and create salon tenancy for a new `SALON_OWNER` role.
 
 ## Booking safeguards
 
@@ -20,7 +20,7 @@ The UI removes booked, held, holiday, and owner-blocked slots; automatically ass
 
 ## RLS policies
 
-RLS is enabled on every app table. `is_super_admin()` permits platform-level access. `has_salon_access(salon_id)` scopes salon owners to only their own salon data. Public read policies are limited to active discovery data, while marketing tables such as campaigns, recipients, segments, and redemptions are salon-scoped.
+RLS is enabled on every app table. Identity accounts and role memberships are self-readable, ADMIN assignment is blocked from self-registration, `is_super_admin()` permits platform-level access, and `has_salon_access(salon_id)` scopes salon owners to only their own salon data. Public read policies are limited to active discovery data, while marketing tables such as campaigns, recipients, segments, and redemptions are salon-scoped.
 
 ## Marketing loop supported
 

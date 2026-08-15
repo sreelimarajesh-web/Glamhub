@@ -28,8 +28,10 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 - Sign-in and Google signup render Google Identity Services directly inside the SPA authentication card, so one click opens Google without an intermediate SalonMate login page.
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
-- The selected `customer` or `salon_owner` role is preserved in both Google OAuth state and email-signup payloads.
-- The selected role is stored in OAuth state and written into the shared SPA session when Google returns. The standalone `login.html` route remains available only for direct legacy links. Email signup remains a local demo path. Production should connect both paths to Supabase Auth, validate the role server-side, and never persist raw passwords in application tables.
+- Manual email/password sign-in is available alongside Google, including a password-recovery affordance.
+- One normalized email maps to one identity account, while `identity_roles` allows that account to hold Customer and Salon Owner roles without duplicate users.
+- `/admin/login` is the only public admin entry. `/admin/dashboard` and other `/admin/*` routes require a signed, HTTP-only ADMIN session cookie.
+- Browser email auth remains a local demo path. Production should connect both paths to Supabase Auth, validate roles server-side, and never persist raw passwords in application tables.
 
 ## V1 booking rules
 
@@ -44,3 +46,4 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 - WhatsApp uses click-to-chat links in `src/app.js`; campaigns are tracked in-app first so the future WhatsApp Business API adapter can be added without changing the owner workflow.
 - Online payment is intentionally not implemented; V1 uses pay at salon.
 - Supabase Google provider settings and OAuth redirect URLs must be configured for production authentication.
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a strong `ADMIN_SESSION_SECRET` are required for the restricted admin route.
