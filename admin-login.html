@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SalonMate | Admin Sign In</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <main class="admin-auth-page">
+    <section class="admin-auth-card">
+      <p class="eyebrow">Restricted access</p>
+      <h1>SalonMate Admin</h1>
+      <p>Sign in with your platform administrator credentials.</p>
+      <form id="admin-auth-form">
+        <label>Email address<input name="email" type="email" autocomplete="username" required></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+        <button class="full-button" type="submit">Sign In</button>
+        <p id="admin-auth-error" class="error" role="alert"></p>
+      </form>
+      <a class="admin-back-link" href="/">← Back to SalonMate</a>
+    </section>
+  </main>
+  <script src="/js/admin-auth.js"></script>
+</body>
+</html>
