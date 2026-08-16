@@ -31,7 +31,11 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
 - Manual email/password sign-in is available alongside Google, including a password-recovery affordance.
 - One normalized email maps to one identity account, while `identity_roles` allows that account to hold Customer and Salon Owner roles without duplicate users.
-- `/admin/login` is the only public admin entry. `/admin/dashboard` and other `/admin/*` routes require a signed, HTTP-only ADMIN session cookie.
+
+### Vercel admin authentication
+
+`vercel.json` maps `/admin/login` and `/admin/dashboard` to their static page shells, while the matching serverless functions under `api/admin/` provide login, session validation, and logout. Configure `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a long random `ADMIN_SESSION_SECRET` in the Vercel project before using the admin login.
+- `/admin/login` is the public admin entry. The dashboard shell validates the signed, HTTP-only ADMIN session cookie through `/api/admin/session`, and protected admin data must remain behind server-side session checks.
 - Browser email auth remains a local demo path. Production should connect both paths to Supabase Auth, validate roles server-side, and never persist raw passwords in application tables.
 
 ## V1 booking rules
