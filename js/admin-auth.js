@@ -21,7 +21,7 @@ if (loginForm) {
       }
       window.location.replace(result.redirectTo);
     } catch (_error) {
-      errorMessage.textContent = 'Unable to reach SalonMate. Please try again.';
+      errorMessage.textContent = 'Unable to reach Zaya. Please try again.';
     }
   });
 }
