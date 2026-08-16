@@ -23,7 +23,11 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .danger { background: #fff1f0; color: var(--danger); }
 .danger:hover { background: #fee4e2; }
 .top { align-items: center; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--border); display: flex; gap: 20px; justify-content: space-between; padding: 12px 20px; position: sticky; top: 0; z-index: 10; }
-.brand { color: var(--primary); font-size: 1.2rem; white-space: nowrap; }
+.zaya-brand { align-items: center; color: var(--text); display: inline-flex; flex: 0 0 auto; gap: 10px; white-space: nowrap; }
+.zaya-brand img { height: 42px; width: 42px; }
+.zaya-brand > span { display: grid; line-height: 1; }
+.zaya-brand strong { font-size: 1.18rem; letter-spacing: -.02em; }
+.zaya-brand small { color: var(--muted); font-size: .58rem; font-weight: 500; letter-spacing: .025em; margin-top: 5px; }
 nav { display: flex; gap: 3px; overflow-x: auto; }
 nav button { min-height: 38px; padding: 8px 11px; white-space: nowrap; }
 nav button.active { background: var(--primary-soft); color: var(--primary); }
@@ -95,11 +99,7 @@ p { line-height: 1.55; }
 .home-offer p { color: var(--muted); }
 .home-more { margin: 14px 0; text-align: center; }
 .discovery-home { background: #fff; margin: -28px -18px 0; min-height: 100vh; padding: 44px 28px 80px; }
-.location-picker { background: transparent; color: #111; font-size: 1.05rem; gap: 10px; padding: 8px 0; }
-.location-picker:hover { background: transparent; }
-.location-picker > span:first-child { color: var(--primary); font-size: .9rem; }
-.location-picker .chevron { font-size: 1.15rem; margin-left: 3px; }
-.search-bar { align-items: center; border: 1px solid #e5e7eb; border-radius: 999px; box-shadow: 0 10px 28px rgba(15,23,42,.1); display: grid; gap: 10px; grid-template-columns: auto 1fr auto; margin: 26px 0 28px; padding: 8px 9px 8px 18px; }
+.search-bar { align-items: center; border: 1px solid #e5e7eb; border-radius: 999px; box-shadow: 0 10px 28px rgba(15,23,42,.1); display: grid; gap: 10px; grid-template-columns: auto 1fr auto; margin: 0 0 28px; padding: 8px 9px 8px 18px; }
 .search-bar .search-icon { color: #111; font-size: 1.75rem; line-height: 1; }
 .search-bar input { border: 0; box-shadow: none; font-size: 1rem; margin: 0; padding: 10px 4px; }
 .search-bar button { background: var(--primary); border-radius: 999px; min-width: 104px; }
@@ -198,6 +198,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 footer { display: none; }
 .admin-auth-page { align-items: center; display: flex; min-height: 100vh; padding: 24px; }
 .admin-auth-card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 16px 45px rgba(15,23,42,.1); margin: auto; max-width: 430px; padding: 32px; width: 100%; }
+.admin-auth-brand { margin-bottom: 24px; }
 .admin-auth-card > h1 { margin-bottom: 8px; }
 .admin-auth-card > p:not(.eyebrow) { color: var(--muted); margin: 0 0 22px; }
 .admin-back-link { background: transparent; color: var(--primary); display: flex; font-size: .82rem; margin-top: 14px; padding: 4px; }

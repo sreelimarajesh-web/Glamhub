@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SalonMate | Admin Sign In</title>
+  <title>Zaya | Admin Sign In</title>
   <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body>
   <main class="admin-auth-page">
     <section class="admin-auth-card">
+      <span class="zaya-brand admin-auth-brand"><img src="/assets/zaya-mark.svg" alt=""><span><strong>Zaya Admin</strong><small>Beauty, beautifully booked.</small></span></span>
       <p class="eyebrow">Restricted access</p>
-      <h1>SalonMate Admin</h1>
-      <p>Sign in with your platform administrator credentials.</p>
+      <h1>Administrator sign in</h1>
+      <p>Sign in with your administrator username and password.</p>
       <form id="admin-auth-form">
-        <label>Email address<input name="email" type="email" autocomplete="username" required></label>
+        <label>Username<input name="email" type="text" autocomplete="username" required></label>
         <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
         <button class="full-button" type="submit">Sign In</button>
         <p id="admin-auth-error" class="error" role="alert"></p>
       </form>
-      <a class="admin-back-link" href="/">← Back to SalonMate</a>
+      <a class="admin-back-link" href="/">← Back to Zaya</a>
     </section>
   </main>
   <script src="/js/admin-auth.js"></script>
