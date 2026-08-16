@@ -1,4 +1,4 @@
-# SalonMate targeted marketing MVP implementation notes
+# Zaya targeted marketing MVP implementation notes
 
 ## Database tables created
 

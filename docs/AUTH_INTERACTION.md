@@ -1,6 +1,6 @@
 # Authentication interaction model
 
-SalonMate has two deliberately separate authentication entry points. Both use the same identity service and JWT validation, but only a booking-triggered login creates or resumes booking context.
+Zaya has two deliberately separate authentication entry points. Both use the same identity service and JWT validation, but only a booking-triggered login creates or resumes booking context.
 
 ## State machine
 

@@ -3,19 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SalonMate | Admin Dashboard</title>
+  <title>Zaya | Admin Dashboard</title>
   <link rel="stylesheet" href="/src/styles.css">
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
 </head>
-<body>
-  <header class="top"><b class="brand">✂ SalonMate Admin</b><button id="admin-logout" class="ghost">Log Out</button></header>
-  <main>
-    <div class="page-heading"><div><p class="eyebrow">Platform administration</p><h1>Admin Dashboard</h1><p id="admin-identity">Validating administrator session…</p></div></div>
-    <div class="grid stats">
-      <section class="card"><span>Access</span><b>Restricted</b></section>
-      <section class="card"><span>Role</span><b>ADMIN</b></section>
-      <section class="card"><span>Session</span><b>8 hours</b></section>
-    </div>
-  </main>
+<body class="admin-shell">
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <a class="zaya-brand admin-wordmark" href="/admin/dashboard" aria-label="Zaya admin dashboard"><img src="/assets/zaya-mark.svg" alt=""><span><strong>Zaya Admin</strong><small>Beauty, beautifully booked.</small></span></a>
+    <nav id="admin-nav" aria-label="Admin sections"></nav>
+    <button id="admin-logout" class="sidebar-logout" type="button"><span>↪</span> Logout</button>
+  </aside>
+  <div class="admin-workspace">
+    <header class="admin-topbar">
+      <button id="sidebar-toggle" class="icon-button" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+      <div><p class="eyebrow">Platform administration</p><h1 id="page-title">Dashboard</h1></div>
+      <div class="admin-identity"><span class="admin-avatar">A</span><span id="admin-identity">Validating session…</span></div>
+    </header>
+    <main id="admin-content" class="admin-content"><div class="loading-state"><span></span><p>Loading admin workspace…</p></div></main>
+  </div>
+  <div id="admin-toast" class="admin-toast" role="status" aria-live="polite"></div>
+  <div id="admin-modal" class="admin-modal-backdrop" hidden></div>
   <script src="/js/admin-auth.js"></script>
+  <script src="/js/admin-dashboard.js"></script>
 </body>
 </html>

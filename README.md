@@ -1,4 +1,4 @@
-# SalonMate
+# Zaya
 
 Production-ready MVP scaffold for a Palakkad, Kerala salon booking and targeted marketing SaaS. V1 supports hybrid demo authentication, salon search, services, available-slot booking, walk-ins, an owner appointment calendar, WhatsApp confirmation links, and targeted offers.
 
@@ -27,11 +27,15 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 ## Authentication adapters
 
 - The public app supports two entry points: contextual authentication from **Book Now**, which preserves and resumes the booking draft, and a universal header login for Customer or Salon Owner access. The complete state machine and modal contract are documented in [`docs/AUTH_INTERACTION.md`](docs/AUTH_INTERACTION.md).
-- Sign-in and Google signup render Google Identity Services directly inside the SPA authentication card, so one click opens Google without an intermediate SalonMate login page.
+- Sign-in and Google signup render Google Identity Services directly inside the SPA authentication card, so one click opens Google without an intermediate Zaya login page.
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
 - Manual email/password sign-in is available alongside Google, including a password-recovery affordance.
 - One normalized email maps to one identity account, while `identity_roles` allows that account to hold Customer and Salon Owner roles without duplicate users.
-- `/admin/login` is the only public admin entry. `/admin/dashboard` and other `/admin/*` routes require a signed, HTTP-only ADMIN session cookie.
+
+### Vercel admin authentication
+
+`vercel.json` maps `/admin/login` and `/admin/dashboard` to their static page shells, while the matching serverless functions under `api/admin/` provide login, session validation, and logout. The default login is username `admin` with password `infy@123`. A deployment can override these with `ADMIN_USERNAME` and `ADMIN_PASSWORD` (the legacy `ADMIN_EMAIL` variable is also accepted as the username).
+- `/admin/login` is the public admin entry. The dashboard shell validates the signed, HTTP-only ADMIN session cookie through `/api/admin/session`, and protected admin data must remain behind server-side session checks.
 - Browser email auth remains a local demo path. Production should connect both paths to Supabase Auth, validate roles server-side, and never persist raw passwords in application tables.
 
 ## V1 booking rules
@@ -47,4 +51,8 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 - WhatsApp uses click-to-chat links in `src/app.js`; campaigns are tracked in-app first so the future WhatsApp Business API adapter can be added without changing the owner workflow.
 - Online payment is intentionally not implemented; V1 uses pay at salon.
 - Supabase Google provider settings and OAuth redirect URLs must be configured for production authentication.
-- `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and a strong `ADMIN_SESSION_SECRET` are required for the restricted admin route.
+- Override `ADMIN_USERNAME` and `ADMIN_PASSWORD` in production to replace the built-in admin credentials.
+
+## Admin platform
+
+The complete admin interface, routes, schema changes, tables, triggers, and row-level security policies are documented in [`docs/ADMIN_PLATFORM.md`](docs/ADMIN_PLATFORM.md).
