@@ -8,13 +8,13 @@ Zaya has two deliberately separate authentication entry points. Both use the sam
 stateDiagram-v2
   [*] --> Browsing
   Browsing --> BookingDraft: Book Now / Select service
-  BookingDraft --> CustomerAuth: no session; persist draft in sessionStorage
-  BookingDraft --> BookingForm: ROLE_CUSTOMER session
-  BookingDraft --> RoleMismatch: ROLE_OWNER session
+  BookingDraft --> BookingForm: persist draft; choose date and time
+  BookingForm --> CustomerAuth: Confirm; no session
+  BookingForm --> RoleMismatch: Confirm; ROLE_OWNER session
   CustomerAuth --> BookingForm: ROLE_CUSTOMER; hydrate draft
   CustomerAuth --> RoleMismatch: ROLE_OWNER
   RoleMismatch --> CustomerAuth: Switch account
-  BookingForm --> Confirmation: slot selected and booking submitted
+  BookingForm --> Confirmation: Confirm; ROLE_CUSTOMER session
   Confirmation --> Browsing: clear booking draft
 
   Browsing --> UniversalAuth: header Log In
@@ -28,9 +28,13 @@ stateDiagram-v2
 onBookNow(selection):
   draft = { salonId, serviceId, staffId, date, time, forWhom }
   sessionStorage["salonmate_pending_booking"] = draft
+  openBookingForm(draft)
+
+onConfirmBooking(draft):
+  persistSelectedDateTimeGuestAndNote(draft)
   if no session: openAuthModal(trigger="booking", allowedRole="customer")
   else if token has ROLE_OWNER: showRoleMismatch()
-  else: openBookingConfirmation(draft)
+  else: createBooking(draft)
 
 onHeaderLogin():
   openAuthModal(trigger="universal", returnRoute=currentRoute)
