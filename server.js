@@ -62,6 +62,6 @@ app.get('/admin-dashboard.html', requireAdmin, (_req, res) => res.redirect('/adm
 app.get('/admin.html', (_req, res) => res.redirect('/admin/login'));
 app.use('/admin', requireAdmin, (_req, res) => res.status(404).send('Admin page not found.'));
 app.use(express.static(__dirname));
-app.get('/api/health', (_req, res) => res.json({ ok: true, app: 'SalonMate' }));
+app.get('/api/health', (_req, res) => res.json({ ok: true, app: 'Zaya' }));
 app.get('*', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.listen(port, () => console.log(`SalonMate running on ${port}`));
+app.listen(port, () => console.log(`Zaya running on ${port}`));
