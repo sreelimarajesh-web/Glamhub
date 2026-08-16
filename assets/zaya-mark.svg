@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title description">
+  <title id="title">Zaya</title>
+  <desc id="description">A flowing letter Z with a sparkle</desc>
+  <defs>
+    <linearGradient id="zaya-gradient" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7138c7"/>
+      <stop offset="1" stop-color="#e3488d"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="19" fill="url(#zaya-gradient)"/>
+  <path d="M17 19.5c8.5-4.3 20-4.5 30.5-.8L22 45.7c9.8-3.3 18.2-2.8 25.5.8" fill="none" stroke="#fffaf6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m50.5 9.5 1.4 4.1 4.1 1.4-4.1 1.4-1.4 4.1-1.4-4.1L45 15l4.1-1.4 1.4-4.1Z" fill="#ffd979"/>
+</svg>
