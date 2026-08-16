@@ -52,3 +52,7 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 - Online payment is intentionally not implemented; V1 uses pay at salon.
 - Supabase Google provider settings and OAuth redirect URLs must be configured for production authentication.
 - Override `ADMIN_USERNAME` and `ADMIN_PASSWORD` in production to replace the built-in admin credentials.
+
+## Admin platform
+
+The complete admin interface, routes, schema changes, tables, triggers, and row-level security policies are documented in [`docs/ADMIN_PLATFORM.md`](docs/ADMIN_PLATFORM.md).
