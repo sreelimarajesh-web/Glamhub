@@ -1,6 +1,6 @@
 # Zaya admin platform implementation
 
-The admin workspace is available at `/admin/dashboard` after authentication at `/admin/login`. It is a functional browser MVP: changes are validated, confirmed, written to the existing shared demo store (`salonmate_marketing_mvp_v2`), mirrored to the admin workspace store (`zaya_admin_workspace_v1`), audited, and immediately reflected in customer eligibility rules. The production data contract and authorization boundary are defined by `202608160001_admin_platform.sql`.
+The admin workspace is available at `/admin/dashboard` after authentication at `/admin/login`. It reads and writes the same MongoDB application database as the customer and owner application through protected admin APIs. Changes use revision checks and important moderation actions are audited. The optional Supabase data contract is defined by `202608160001_admin_platform.sql`.
 
 ## Interface files
 
@@ -8,7 +8,7 @@ The admin workspace is available at `/admin/dashboard` after authentication at `
 | --- | --- |
 | `admin-dashboard.html` | Authenticated responsive admin shell, sidebar, loading state, modal and toast hosts. |
 | `css/admin-dashboard.css` | Desktop/tablet/mobile sidebar, reusable panels, tables, badges, forms, dialogs, loading and empty states. |
-| `js/admin-dashboard.js` | Dashboard metrics and all salon, user, booking, category, offer, complaint, notification and settings workflows; demo data; validations; confirmations; audit records. |
+| `js/admin-dashboard.js` | Dashboard metrics and all salon, user, booking, category, offer, complaint, notification and settings workflows; live database data; validations; confirmations; audit records. |
 | `js/admin-auth.js` | Login/session/logout client and redirect on an invalid admin session. |
 | `src/app.js` | Customer discovery and booking eligibility enforcement for approved, active, non-suspended salons. |
 | `tests/admin-auth.test.js` | Admin success and logout coverage plus Customer, Salon Owner, missing-session and tampered-cookie rejection coverage. |

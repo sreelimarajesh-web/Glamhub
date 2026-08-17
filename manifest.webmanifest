@@ -1,0 +1,13 @@
+{
+  "name": "Zaya Salon Booking",
+  "short_name": "Zaya",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf7",
+  "theme_color": "#7b2d4f",
+  "icons": [{ "src": "/assets/zaya-mark.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }],
+  "shortcuts": [
+    { "name": "Find a salon", "url": "/#search" },
+    { "name": "My bookings", "url": "/#bookings" }
+  ]
+}
