@@ -1,10 +1,11 @@
-const connectToDatabase = require('../lib/mongodb');
+import { mongodbHealth } from '../lib/mongodb-connection.js';
 
-module.exports = async (_req, res) => {
-    try {
-        await connectToDatabase();
-        return res.status(200).json({ ok: true });
-    } catch (error) {
-        return res.status(500).json({ ok: false, error: 'Database connection failed.' });
-    }
-};
+export default async function handler(_req, res) {
+  const database = await mongodbHealth();
+  return res.status(database.ok ? 200 : 503).json({
+    ok: database.ok,
+    app: 'Zaya',
+    database: 'mongodb',
+    ...database,
+  });
+}
