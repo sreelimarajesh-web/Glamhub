@@ -27,7 +27,7 @@ stateDiagram-v2
 ```text
 onBookNow(selection):
   draft = { salonId, serviceId, staffId, date, time, forWhom }
-  sessionStorage["salonmate_pending_booking"] = draft
+  inMemoryDraft = draft (never persisted in browser storage)
   openBookingForm(draft)
 
 onConfirmBooking(draft):
@@ -43,7 +43,7 @@ onHeaderLogin():
 onAuthenticated(jwt):
   claims = verifyJwtOnServer(jwt)
   if ROLE_ADMIN: redirect("/admin/dashboard")
-  pending = sessionStorage["salonmate_pending_booking"]
+  pending = inMemoryDraft
   if pending and ROLE_CUSTOMER: hydrate(pending); openBookingConfirmation()
   if pending and ROLE_OWNER: showRoleMismatch()
   else if ROLE_OWNER: redirect("/partner/dashboard")

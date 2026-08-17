@@ -1,1 +1,16 @@
-{"name":"zaya","version":"1.0.0","private":true,"description":"Zaya salon management SaaS MVP for Palakkad, Kerala","type":"module","scripts":{"start":"node server.js","check":"node --check server.js && node --check src/app.js && node --check js/login.js && node --check js/admin-auth.js && node --check config.js && node --check lib/admin-session.js && node --check api/admin/login.js && node --check api/admin/session.js && node --check api/admin/logout.js && node --check js/admin-dashboard.js","test":"node --test tests/*.test.js"},"dependencies":{"express":"^4.21.2"}}
+{
+  "name": "zaya",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zaya salon management SaaS MVP for Palakkad, Kerala",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check src/app.js && node --check js/login.js && node --check js/admin-auth.js && node --check config.js && node --check lib/admin-session.js && node --check api/admin/login.js && node --check api/admin/session.js && node --check api/admin/logout.js && node --check js/admin-dashboard.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.18.0"
+  }
+}

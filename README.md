@@ -1,6 +1,6 @@
 # Zaya
 
-Production-ready MVP scaffold for a Palakkad, Kerala salon booking and targeted marketing SaaS. V1 supports hybrid demo authentication, salon search, services, available-slot booking, walk-ins, an owner appointment calendar, WhatsApp confirmation links, and targeted offers.
+Database-backed salon booking and targeted marketing application for salons and their customers. It supports secure account sessions, salon search, available-slot booking, walk-ins, an owner appointment calendar, WhatsApp links, offers, administration, keyboard shortcuts, and installable browser notifications.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ Open `http://localhost:3000`.
 
 ## Supabase
 
-Apply the SQL files in `supabase/migrations/` in order. They create the relational booking schema, targeted marketing tables, indexes, subscription plans, RLS helper functions, RLS policies, and fictional Palakkad-area demo salon records.
+The SQL files in `supabase/migrations/` document an optional future Supabase deployment. The runnable Express application uses the MongoDB runtime described below and does not apply or seed these migrations.
 
 Required browser-safe env when wiring the frontend to Supabase Auth:
 
@@ -36,7 +36,7 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 `vercel.json` maps `/admin/login` and `/admin/dashboard` to their static page shells, while the matching serverless functions under `api/admin/` provide login, session validation, and logout. The default login is username `admin` with password `infy@123`. A deployment can override these with `ADMIN_USERNAME` and `ADMIN_PASSWORD` (the legacy `ADMIN_EMAIL` variable is also accepted as the username).
 - `/admin/login` is the public admin entry. The dashboard shell validates the signed, HTTP-only ADMIN session cookie through `/api/admin/session`, and protected admin data must remain behind server-side session checks.
-- Browser email auth remains a local demo path. Production should connect both paths to Supabase Auth, validate roles server-side, and never persist raw passwords in application tables.
+- Customer and owner email authentication is handled by the Express server using scrypt password hashes and HTTP-only session cookies.
 
 ## V1 booking rules
 
@@ -56,3 +56,9 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 ## Admin platform
 
 The complete admin interface, routes, schema changes, tables, triggers, and row-level security policies are documented in [`docs/ADMIN_PLATFORM.md`](docs/ADMIN_PLATFORM.md).
+
+## Database-backed runtime
+
+The runnable application uses the MongoDB deployment configured by `MONGODB_URI`. It creates empty application-state, account, and expiring-session collections as real users register—no fictional salons, customers, or appointments are inserted. Customer and owner accounts use server-side scrypt password hashes and HTTP-only cookie sessions. All application mutations and admin changes are written through authenticated APIs with atomic optimistic revision checks; browser local/session storage is not used.
+
+Configure `MONGODB_URI` as shown in `.env.example`. MongoDB TTL indexes automatically remove expired application sessions. The included manifest and service worker make the shell installable, while API requests remain network-only to prevent stale booking writes.
