@@ -56,3 +56,15 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 ## Admin platform
 
 The complete admin interface, routes, schema changes, tables, triggers, and row-level security policies are documented in [`docs/ADMIN_PLATFORM.md`](docs/ADMIN_PLATFORM.md).
+
+## MongoDB rollout — step 1: connection verification
+
+MongoDB migration is intentionally staged. The current release only establishes and tests the shared MongoDB connection; the customer SPA continues using its existing data path and does **not** block startup on MongoDB. This prevents a database or serverless-route configuration error from taking down the public UI.
+
+1. Set `MONGODB_URI` in the local `.env` file and in the Vercel project's Production, Preview, and Development environments.
+2. Install dependencies and deploy.
+3. Open `/api/health`. A successful connection returns HTTP `200` with `{"ok":true,"database":"mongodb","status":"connected"}`.
+4. Missing configuration returns HTTP `503` with `status: "missing_configuration"`; an unreachable cluster or invalid credentials returns HTTP `503` with `status: "connection_failed"`.
+5. In MongoDB Atlas, allow Vercel's network access before testing. No URI, credentials, host names, or raw driver errors are returned to the browser.
+
+Only after this endpoint reports `connected` should accounts, bookings, and other features be migrated one collection at a time.
