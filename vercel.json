@@ -2,7 +2,7 @@
   "rewrites": [
     { "source": "/api/auth/:action", "destination": "/api/auth?action=:action" },
     { "source": "/api/state", "destination": "/api/state" },
-    { "source": "/login", "destination": "/login.html" },
+    { "source": "/login", "destination": "/index.html" },
     { "source": "/partner/:path*", "destination": "/index.html" },
     { "source": "/admin/login", "destination": "/admin-login.html" },
     { "source": "/admin/dashboard", "destination": "/admin-dashboard.html" }
