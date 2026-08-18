@@ -19,5 +19,13 @@ test('MongoDB connector caches connections, pings the cluster, and hides raw err
   assert.match(source, /\.admin\(\)\.ping\(\)/);
   assert.match(source, /status: 'missing_configuration'/);
   assert.match(source, /status: 'connection_failed'/);
+  assert.match(source, /latencyMs:/);
   assert.doesNotMatch(source, /return \{[^}]*error\.message/s, 'raw database errors must not be returned');
+});
+
+test('MongoDB verification command performs a server command', async () => {
+  const source = await readFile(new URL('../scripts/verify-mongodb.js', import.meta.url), 'utf8');
+  assert.match(source, /mongodbHealth\(\)/);
+  assert.match(source, /command\(\{ buildInfo: 1 \}\)/);
+  assert.match(source, /instance\.disconnect\(\)/);
 });

@@ -68,3 +68,5 @@ MongoDB migration is intentionally staged. The current release only establishes 
 5. In MongoDB Atlas, allow Vercel's network access before testing. No URI, credentials, host names, or raw driver errors are returned to the browser.
 
 Only after this endpoint reports `connected` should accounts, bookings, and other features be migrated one collection at a time.
+
+When using the Vercel MongoDB integration, redeploy after connecting the integration so its injected `MONGODB_URI` is available to the serverless function. The endpoint disables HTTP caching and reports `latencyMs`, so each request verifies the current deployment rather than returning an old CDN response. To verify from a development shell that has the same environment variable, run `npm run test:mongodb`; it performs both a ping and MongoDB `buildInfo` command, prints only non-secret connection metadata, then closes the process connection.
