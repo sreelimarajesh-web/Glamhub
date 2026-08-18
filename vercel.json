@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/auth/:path*", "destination": "/api/auth/:path*" },
+    { "source": "/api/auth/:action", "destination": "/api/auth?action=:action" },
     { "source": "/api/state", "destination": "/api/state" },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/admin/login", "destination": "/admin-login.html" },

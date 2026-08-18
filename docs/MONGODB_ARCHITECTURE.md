@@ -6,7 +6,7 @@ MongoDB is the system of record for customer, salon-owner, and administrator dat
 
 - `Account` stores normalized identities, roles, status, and server-side `scrypt` password material. Password hashes are never returned to the browser.
 - `PlatformState` is the compatibility aggregate for the existing document-shaped MVP. It has an optimistic `revision`, preventing silent last-writer-wins updates. This is an intentional migration seam: bookings, salons, customers, offers, and campaigns can be extracted into dedicated collections without changing the browser contract at once.
-- `/api/auth/*` creates and validates signed, HTTP-only cookies. Customer and owner sessions therefore survive navigation without readable tokens in local or session storage.
+- `/api/auth/*` is dispatched through one `api/auth.js` serverless function, which creates and validates signed, HTTP-only cookies. Customer and owner sessions therefore survive navigation without readable tokens in local or session storage.
 - `/api/state` requires a valid customer/owner or administrator cookie. Administrator writes can update the platform state; customer and owner writes are filtered to records owned by their account or salon.
 
 ## Browser storage policy
