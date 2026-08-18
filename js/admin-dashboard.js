@@ -32,13 +32,14 @@
     notifications:[], auditLog:[],
     settings:{platformName:'Zaya',supportContact:'support@zaya.app',cancellationWindow:2,currency:'INR',timezone:'Asia/Kolkata',commissionPercent:0,bookingRules:'Pay at salon. Cancellation is allowed before the configured window.'}
   };
-  let appDb = load(stateKey, {});
-  let adminDb = load(adminKey, defaults);
+  let appDb = {};
+  let adminDb = structuredClone(defaults);
+  let stateRevision = 0;
   let currentRoute = location.hash.replace('#/','') || 'dashboard';
   let page = 1;
 
-  function load(key,fallback) { try { return JSON.parse(localStorage.getItem(key)) || structuredClone(fallback); } catch { return structuredClone(fallback); } }
-  function save() { localStorage.setItem(stateKey, JSON.stringify(appDb)); localStorage.setItem(adminKey, JSON.stringify(adminDb)); }
+  let saveTimer;
+  function save() { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { const response = await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ app:appDb, admin:adminDb, revision:stateRevision }) }); const payload=await response.json().catch(()=>({})); if(response.ok) stateRevision=payload.revision; else toast(payload.error||'Changes could not be saved.',true); }, 100); }
   function normalize() {
     appDb.salons = (appDb.salons?.length ? appDb.salons : demoSalons).map((salon,index)=>({ ...demoSalons[index%demoSalons.length], ...salon, approvalStatus:salon.approvalStatus || (salon.approved===false?'pending':'approved'), accountStatus:salon.accountStatus || (salon.suspended?'suspended':'active'), active:salon.active !== false && salon.approved !== false && !salon.suspended }));
     appDb.customers = (appDb.customers?.length ? appDb.customers : demoCustomers).map((customer,index)=>({ ...demoCustomers[index%demoCustomers.length], ...customer, accountStatus:customer.accountStatus || (customer.disabled?'suspended':'active'), createdAt:customer.createdAt || demoCustomers[index%demoCustomers.length].createdAt }));
@@ -115,5 +116,5 @@
   function render(){if(!views[currentRoute])currentRoute='dashboard';title.textContent=routes.find(x=>x[0]===currentRoute)?.[2]||'Dashboard';renderNav();content.innerHTML=views[currentRoute]();bind();}
   document.getElementById('sidebar-toggle').onclick=()=>{const sidebar=document.getElementById('admin-sidebar'),open=sidebar.classList.toggle('open');document.getElementById('sidebar-toggle').setAttribute('aria-expanded',String(open));};
   addEventListener('hashchange',()=>{currentRoute=location.hash.replace('#/','')||'dashboard';render();});
-  fetch('/api/admin/session').then(response=>{if(!response.ok)throw new Error();return response.json();}).then(admin=>{document.getElementById('admin-identity').textContent=`${admin.email} · ADMIN`;normalize();setTimeout(render,150);}).catch(()=>location.replace('/admin/login'));
+  fetch('/api/admin/session').then(response=>{if(!response.ok)throw new Error();return response.json();}).then(async admin=>{document.getElementById('admin-identity').textContent=`${admin.email} · ADMIN`;const response=await fetch('/api/state',{cache:'no-store'});if(!response.ok)throw new Error();const state=await response.json();appDb=state.app||{};adminDb=Object.keys(state.admin||{}).length?state.admin:structuredClone(defaults);stateRevision=state.revision||0;normalize();setTimeout(render,150);}).catch(()=>location.replace('/admin/login'));
 })();
