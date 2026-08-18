@@ -57,9 +57,9 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 The complete admin interface, routes, schema changes, tables, triggers, and row-level security policies are documented in [`docs/ADMIN_PLATFORM.md`](docs/ADMIN_PLATFORM.md).
 
-## MongoDB rollout — step 1: connection verification
+## MongoDB persistence
 
-MongoDB migration is intentionally staged. The current release only establishes and tests the shared MongoDB connection; the customer SPA continues using its existing data path and does **not** block startup on MongoDB. This prevents a database or serverless-route configuration error from taking down the public UI.
+MongoDB is the source of truth for customer, salon-owner, and administrator data. Identity APIs store server-hashed credentials and issue signed HTTP-only session cookies. The compatibility state API persists the current MVP document with optimistic revisions and applies role-based write scopes. Business and identity data is no longer stored in browser `localStorage`; `sessionStorage` is reserved for an unfinished booking draft and OAuth correlation only. See [`docs/MONGODB_ARCHITECTURE.md`](docs/MONGODB_ARCHITECTURE.md) for boundaries and the collection-extraction plan.
 
 1. Set `MONGODB_URI` in the local `.env` file and in the Vercel project's Production, Preview, and Development environments.
 2. Install dependencies and deploy.
@@ -67,6 +67,6 @@ MongoDB migration is intentionally staged. The current release only establishes 
 4. Missing configuration returns HTTP `503` with `status: "missing_configuration"`; an unreachable cluster or invalid credentials returns HTTP `503` with `status: "connection_failed"`.
 5. In MongoDB Atlas, allow Vercel's network access before testing. No URI, credentials, host names, or raw driver errors are returned to the browser.
 
-Only after this endpoint reports `connected` should accounts, bookings, and other features be migrated one collection at a time.
+The application APIs require this endpoint to report `connected`; the public discovery shell can still render while a transient database outage is resolved.
 
 When using the Vercel MongoDB integration, redeploy after connecting the integration so its injected `MONGODB_URI` is available to the serverless function. The endpoint disables HTTP caching and reports `latencyMs`, so each request verifies the current deployment rather than returning an old CDN response. To verify from a development shell that has the same environment variable, run `npm run test:mongodb`; it performs both a ping and MongoDB `buildInfo` command, prints only non-secret connection metadata, then closes the process connection.
