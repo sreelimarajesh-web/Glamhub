@@ -3,11 +3,12 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 test('Google identity fields and salon business fields are stored separately', async () => {
-  const [account, salon, oauth, client] = await Promise.all([
+  const [account, salon, oauth, client, publicState] = await Promise.all([
     readFile(new URL('../models/Account.js', import.meta.url), 'utf8'),
     readFile(new URL('../models/Salon.js', import.meta.url), 'utf8'),
     readFile(new URL('../lib/auth-handlers/google.js', import.meta.url), 'utf8'),
     readFile(new URL('../src/app.js', import.meta.url), 'utf8'),
+    readFile(new URL('../api/state.js', import.meta.url), 'utf8'),
   ]);
   assert.match(account, /ownerName/);
   assert.doesNotMatch(account, /salonName/);
@@ -20,4 +21,8 @@ test('Google identity fields and salon business fields are stored separately', a
   assert.match(client, /db\.salons = db\.salons\.filter/);
   assert.match(salon, /salonNameConfirmed/);
   assert.doesNotMatch(client, /`\$\{account\.name \|\| 'My'\} Salon`/);
+  assert.match(publicState, /salonNameConfirmed: true/);
+  assert.match(publicState, /req\.query\?\.view === 'salons'/);
+  assert.match(client, /async function hydratePublicSalons/);
+  assert.match(client, /await hydratePublicSalons\(\); render\(\);/);
 });
