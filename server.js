@@ -5,6 +5,7 @@ import { adminCookie, adminCredentials, clearAdminCookie, createAdminToken, read
 import { mongodbHealth } from './lib/mongodb-connection.js';
 import authHandler from './api/auth.js';
 import stateHandler from './api/state.js';
+import { googleOAuthClientId } from './lib/google-oauth.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,7 +19,7 @@ function requireAdmin(req, res, next) {
 }
 app.get('/config.js', (_req, res) => {
   res.type('application/javascript').send(`window.SALONMATE_CONFIG = ${JSON.stringify({
-    googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID || '',
+    googleOAuthClientId: googleOAuthClientId(),
   })};`);
 });
 app.get('/login', (_req, res) => res.sendFile(path.join(__dirname, 'login.html')));
