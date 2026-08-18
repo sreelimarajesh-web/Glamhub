@@ -169,6 +169,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .status-cancelled, .status-no-show { background: #fee2e2; color: #b91c1c; }
 .status-pending, .status-confirmed { background: #dbeafe; color: #1d4ed8; }
 .booking-card .actions:empty { display: none; }
+.booking-request { border-left: 4px solid var(--primary); }
+.booking-state-note { background: #fffaeb; border-radius: 9px; color: #93370d !important; padding: 10px 12px; }
+.booking-editor { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
+.booking-editor summary { color: var(--primary-dark); cursor: pointer; font-weight: 700; }
+.booking-editor[open] summary { margin-bottom: 12px; }
 .profile-hero { align-items: center; background: white; border: 1px solid #f1f5f9; border-radius: 20px; box-shadow: 0 2px 8px rgba(15,23,42,.05); display: flex; gap: 20px; padding: 24px; }
 .profile-avatar { align-items: center; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 6px var(--primary-soft); color: white; display: flex; font-size: 1.35rem; font-weight: 700; height: 72px; justify-content: center; min-width: 72px; }
 .profile-identity h1 { font-size: clamp(1.6rem, 4vw, 2rem); margin: 2px 0 5px; }
