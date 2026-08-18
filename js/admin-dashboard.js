@@ -11,24 +11,11 @@
     ['dashboard','⌂','Dashboard'], ['salons','◇','Salons'], ['users','♙','Users'], ['bookings','□','Bookings'],
     ['categories','☷','Categories'], ['offers','%','Offers'], ['complaints','!','Complaints'], ['notifications','◉','Notifications'], ['settings','⚙','Settings']
   ];
-  const demoSalons = [
-    { id:'salon-1', name:'Lotus Glow Studio', ownerId:'owner-1', owner:'Anjali Nair', ownerEmail:'anjali@example.com', phone:'0491 2340001', location:'Palakkad', address:'GB Road, Palakkad', approvalStatus:'approved', accountStatus:'active', active:true, openingHours:'9:00 AM – 7:00 PM', documents:['GST certificate','Owner ID'], image:'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=500&q=75', createdAt:'2026-08-01' },
-    { id:'salon-2', name:'Koduvayur Beauty Room', ownerId:'owner-2', owner:'Fathima Rahman', ownerEmail:'fathima@example.com', phone:'0491 2340002', location:'Koduvayur', address:'Koduvayur Junction', approvalStatus:'pending', accountStatus:'active', active:false, openingHours:'9:30 AM – 6:30 PM', documents:['Owner ID'], createdAt:'2026-08-14' },
-    { id:'salon-3', name:'Kollengode Style House', ownerId:'owner-3', owner:'Devika S', ownerEmail:'devika@example.com', phone:'0491 2340003', location:'Kollengode', address:'Near Bus Stand', approvalStatus:'rejected', rejectionReason:'Business document could not be verified.', accountStatus:'active', active:false, openingHours:'10:00 AM – 7:00 PM', documents:[], createdAt:'2026-08-12' },
-    { id:'salon-4', name:'Kinassery Hair Lounge', ownerId:'owner-4', owner:'Arun Raj', ownerEmail:'arun@example.com', phone:'0491 2340004', location:'Kinassery', address:'Kinassery Road', approvalStatus:'approved', accountStatus:'suspended', active:false, openingHours:'9:00 AM – 8:00 PM', documents:['Trade license'], createdAt:'2026-07-26' },
-    { id:'salon-5', name:'Malampuzha Bridal Care', ownerId:'owner-5', owner:'Asha Ravi', ownerEmail:'asha@example.com', phone:'0491 2340005', location:'Malampuzha', address:'Malampuzha Road', approvalStatus:'approved', accountStatus:'active', active:true, openingHours:'8:30 AM – 7:30 PM', documents:['GST certificate','Owner ID'], createdAt:'2026-08-10' }
-  ];
-  const demoCustomers = ['Priya Nair','Anu Varghese','Meera Thomas','Hanna Salim','Keerthi Raj','Reshma K','Neethu M','Farah Ali'].map((name,index) => ({ id:`cus-${index+1}`, name, email:`${name.split(' ')[0].toLowerCase()}@example.com`, mobile:`+91 98765 00${String(index).padStart(2,'0')}`, location:['Palakkad','Koduvayur','Kollengode'][index%3], accountStatus:index===6?'blocked':'active', createdAt:`2026-08-${String(index+2).padStart(2,'0')}` }));
-  const demoBookings = Array.from({length:18},(_,index) => ({ id:`BK-${String(1001+index)}`, salonId:demoSalons[index%demoSalons.length].id, customerId:demoCustomers[index%demoCustomers.length].id, service:['Haircut','Facial','Bridal Makeup','Pedicure','Beard Styling'][index%5], date:index<3?today:`2026-08-${String((index%14)+1).padStart(2,'0')}`, time:['10:00','11:30','14:00','16:30'][index%4], status:['Pending','Confirmed','Completed','Completed','Cancelled'][index%5], amount:[350,800,2500,750,250][index%5], phone:demoCustomers[index%demoCustomers.length].mobile, createdAt:`2026-08-${String((index%14)+1).padStart(2,'0')}T10:00:00+05:30` }));
   const defaults = {
     categories:['Hair','Beard','Facial','Makeup','Spa','Nail Care','Kids'].map((name,index)=>({id:`cat-${index+1}`,name,active:true,sortOrder:index+1})),
-    complaints:[
-      {id:'CMP-101',customer:'Priya Nair',salon:'Lotus Glow Studio',type:'Service quality',details:'Service duration was much shorter than advertised.',status:'open',notes:'',reviewHidden:false,createdAt:'2026-08-14'},
-      {id:'CMP-102',customer:'Meera Thomas',salon:'Kinassery Hair Lounge',type:'Reported review',details:'Review contains abusive language.',status:'in-progress',notes:'Review queued for moderation.',reviewHidden:true,createdAt:'2026-08-13'},
-      {id:'CMP-103',customer:'Farah Ali',salon:'Malampuzha Bridal Care',type:'Booking issue',details:'Salon requested a different appointment time.',status:'resolved',notes:'Salon and customer agreed to reschedule.',resolution:'Rescheduled at no additional cost.',resolvedAt:'2026-08-15',createdAt:'2026-08-12'}
-    ],
+    complaints: [],
     ownerAccounts:[],
-    platformOffers:[{id:'PO-1',title:'Zaya Welcome',type:'percentage',discount:15,minValue:500,startDate:'2026-08-01',endDate:'2026-09-30',salonId:'all',usageLimit:500,status:'active',source:'platform'}],
+    platformOffers: [],
     notifications:[], auditLog:[],
     settings:{platformName:'Zaya',supportContact:'support@zaya.app',cancellationWindow:2,currency:'INR',timezone:'Asia/Kolkata',commissionPercent:0,bookingRules:'Pay at salon. Cancellation is allowed before the configured window.'}
   };
@@ -41,9 +28,9 @@
   let saveTimer;
   function save() { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { const response = await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ app:appDb, admin:adminDb, revision:stateRevision }) }); const payload=await response.json().catch(()=>({})); if(response.ok) stateRevision=payload.revision; else toast(payload.error||'Changes could not be saved.',true); }, 100); }
   function normalize() {
-    appDb.salons = (appDb.salons?.length ? appDb.salons : demoSalons).map((salon,index)=>({ ...demoSalons[index%demoSalons.length], ...salon, approvalStatus:salon.approvalStatus || (salon.approved===false?'pending':'approved'), accountStatus:salon.accountStatus || (salon.suspended?'suspended':'active'), active:salon.active !== false && salon.approved !== false && !salon.suspended }));
-    appDb.customers = (appDb.customers?.length ? appDb.customers : demoCustomers).map((customer,index)=>({ ...demoCustomers[index%demoCustomers.length], ...customer, accountStatus:customer.accountStatus || (customer.disabled?'suspended':'active'), createdAt:customer.createdAt || demoCustomers[index%demoCustomers.length].createdAt }));
-    appDb.bookings = (appDb.bookings?.length ? appDb.bookings : demoBookings).map((booking,index)=>({ ...demoBookings[index%demoBookings.length], ...booking, id:booking.id || `BK-${1001+index}`, amount:booking.amount || 0 }));
+    appDb.salons = (appDb.salons || []).map((salon) => ({ ...salon, approvalStatus: salon.approvalStatus || (salon.approved === false ? 'pending' : 'approved'), accountStatus: salon.accountStatus || (salon.suspended ? 'suspended' : 'active'), active: salon.active !== false && salon.approved !== false && !salon.suspended }));
+    appDb.customers = (appDb.customers || []).map((customer) => ({ ...customer, accountStatus: customer.accountStatus || (customer.disabled ? 'suspended' : 'active'), createdAt: customer.createdAt || '' }));
+    appDb.bookings = (appDb.bookings || []).map((booking) => ({ ...booking, amount: booking.amount || 0 }));
     appDb.services ||= [];
     appDb.offers ||= [];
     if (!adminDb.ownerAccounts?.length) adminDb.ownerAccounts = appDb.salons.map(salon => ({ id:salon.ownerId, name:salon.owner, email:salon.ownerEmail, mobile:salon.phone, location:salon.location, accountStatus:salon.accountStatus==='suspended'?'suspended':'active' }));

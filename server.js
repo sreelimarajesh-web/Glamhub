@@ -22,7 +22,7 @@ app.get('/config.js', (_req, res) => {
     googleOAuthClientId: googleOAuthClientId(),
   })};`);
 });
-app.get('/login', (_req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get('/login', (_req, res) => res.redirect('/'));
 app.get('/admin/login', (_req, res) => res.sendFile(path.join(__dirname, 'admin-login.html')));
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = adminCredentials();

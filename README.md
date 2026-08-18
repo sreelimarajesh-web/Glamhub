@@ -13,7 +13,7 @@ Open `http://localhost:3000`.
 
 ## Supabase
 
-Apply the SQL files in `supabase/migrations/` in order. They create the relational booking schema, targeted marketing tables, indexes, subscription plans, RLS helper functions, RLS policies, and fictional Palakkad-area demo salon records.
+Apply the SQL files in `supabase/migrations/` in order. They create the relational booking schema, targeted marketing tables, indexes, subscription plans, RLS helper functions, RLS policies, and subscription plan configuration.
 
 Required browser-safe env when wiring the frontend to Supabase Auth:
 
