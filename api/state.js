@@ -30,7 +30,7 @@ function applyRolePolicy(current, requested, actor) {
     next.notifications = scopedMerge(current.notifications, requested.notifications, (item) => customerIds.has(item.customerId) || item.audience === `user:${accountId}`);
   }
   if (actor.roles?.includes('salon_owner')) {
-    next.salons = scopedMerge(current.salons, requested.salons, (item) => item.accountId === accountId || item.ownerId === accountId);
+    // Salon business fields are persisted through /api/auth/salon, never through profile/session state.
     for (const key of ['services', 'staff', 'offers', 'campaigns', 'blockedTimes', 'holidays', 'ownerNotifications']) {
       next[key] = scopedMerge(current[key], requested[key], (item) => salonIds.has(item.salonId));
     }

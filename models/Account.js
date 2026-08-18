@@ -2,7 +2,10 @@ import mongoose from 'mongoose';
 
 const accountSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  name: { type: String, required: true, trim: true },
+  // Personal identity only. Business names live in the Salon collection.
+  ownerName: { type: String, required: true, trim: true },
+  avatarUrl: { type: String, trim: true, default: null },
+  name: { type: String, trim: true, select: false }, // legacy field, removed after data migration
   passwordHash: { type: String, select: false },
   passwordSalt: { type: String, select: false },
   roles: { type: [String], enum: ['customer', 'salon_owner'], required: true },
