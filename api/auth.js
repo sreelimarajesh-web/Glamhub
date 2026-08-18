@@ -3,8 +3,9 @@ import login from '../lib/auth-handlers/login.js';
 import logout from '../lib/auth-handlers/logout.js';
 import register from '../lib/auth-handlers/register.js';
 import session from '../lib/auth-handlers/session.js';
+import salon from '../lib/auth-handlers/salon.js';
 
-const handlers = { google, login, logout, register, session };
+const handlers = { google, login, logout, register, session, salon };
 
 export default function handler(req, res) {
   const action = String(req.query?.action || req.authAction || '').toLowerCase();
