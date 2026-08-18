@@ -2,6 +2,7 @@ import { connectToMongoDB } from '../lib/mongodb-connection.js';
 import { adminCredentials, readAdminToken } from '../lib/admin-session.js';
 import { readUserSession } from '../lib/user-session.js';
 import { PlatformState } from '../models/PlatformState.js';
+import { Salon } from '../models/Salon.js';
 
 const noStore = (res) => res.setHeader('Cache-Control', 'private, no-store, max-age=0');
 const clone = (value) => structuredClone(value || {});
@@ -43,6 +44,11 @@ function applyRolePolicy(current, requested, actor) {
 
 export default async function handler(req, res) {
   noStore(res);
+  if (req.method === 'GET' && req.query?.view === 'salons') {
+    await connectToMongoDB();
+    const salons = await Salon.find({ salonNameConfirmed: true, salonName: { $nin: [null, ''] } }).lean();
+    return res.json({ salons: salons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })) });
+  }
   const actor = authorize(req);
   if (!actor) return res.status(401).json({ error: 'Authentication required.' });
   await connectToMongoDB();
