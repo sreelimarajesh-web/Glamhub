@@ -17,5 +17,7 @@ test('Google identity fields and salon business fields are stored separately', a
   assert.doesNotMatch(oauth, /salonName: profile\.name/);
   assert.match(client, /business = \{ salonName:/);
   assert.match(client, /session\?\.ownerName/);
+  assert.match(client, /db\.salons = db\.salons\.filter/);
+  assert.match(salon, /salonNameConfirmed/);
   assert.doesNotMatch(client, /`\$\{account\.name \|\| 'My'\} Salon`/);
 });

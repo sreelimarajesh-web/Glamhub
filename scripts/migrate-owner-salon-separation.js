@@ -19,6 +19,7 @@ for (const legacy of state?.app?.salons || []) {
   await Salon.updateOne({ ownerId }, { $setOnInsert: {
     ownerId,
     salonName: legacy.name || null,
+    salonNameConfirmed: false,
     phone: legacy.phone || '',
     address: legacy.address || '',
     town: legacy.location || '',
@@ -28,5 +29,15 @@ for (const legacy of state?.app?.salons || []) {
     image: legacy.image || '',
   } }, { upsert: true });
 }
+const unconfirmedSalons = await Salon.find({ salonNameConfirmed: { $ne: true }, salonName: { $ne: null } });
+for (const salon of unconfirmedSalons) {
+  const owner = await Account.findById(salon.ownerId).select('+name');
+  const ownerName = owner?.ownerName || owner?.name;
+  if (ownerName && salon.salonName.localeCompare(ownerName, undefined, { sensitivity: 'base' }) === 0) {
+    salon.salonName = null;
+    await salon.save();
+  }
+}
+
 console.log(`Migrated ${accounts.length} owner profiles and extracted legacy salon businesses.`);
 process.exit(0);

@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const salonSchema = new mongoose.Schema({
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Account', required: true },
   salonName: { type: String, trim: true, default: null },
+  // Only an explicit business-form submission may confirm a salon name.
+  salonNameConfirmed: { type: Boolean, default: false },
   phone: { type: String, trim: true, default: '' },
   address: { type: String, trim: true, default: '' },
   town: { type: String, trim: true, default: '' },
