@@ -74,6 +74,11 @@ function isValidThirtyMinuteSlot(time) {
     return minutes === 0 || minutes === 30;
 }
 
+function isAfterMinimumLeadTime(date, time) {
+    const appointment = new Date(`${date}T${time}:00`);
+    return !Number.isNaN(appointment.getTime()) && appointment.getTime() >= Date.now() + (2 * 60 * 60 * 1000);
+}
+
 function populateTimeSlots() {
     const openingHour = 9;
     const closingHour = 20;
@@ -227,6 +232,11 @@ bookingForm.addEventListener('submit', async (event) => {
 
     if (!isValidThirtyMinuteSlot(booking.time)) {
         showMessage(errorMessage, 'Please select a time in 30-minute intervals.');
+        return;
+    }
+
+    if (!isAfterMinimumLeadTime(booking.date, booking.time)) {
+        showMessage(errorMessage, 'Bookings must be made at least 2 hours in advance.');
         return;
     }
 

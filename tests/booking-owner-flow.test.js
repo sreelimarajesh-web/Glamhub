@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('customer requests remain pending until the salon confirms them', async () => {
+test('customer requests follow the salon confirmation mode', async () => {
   const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
   const confirmation = source.slice(source.indexOf('window.confirmBooking ='), source.indexOf('function myBookings()'));
 
-  assert.match(confirmation, /status: pending\.walkIn \? 'Confirmed' : 'Pending'/);
+  assert.match(confirmation, /confirmationMode === 'automatic' \? 'Confirmed' : 'Pending'/);
   assert.ok(source.includes('Waiting for the salon owner to confirm this request.'));
   assert.ok(source.includes('Confirm booking'));
   assert.ok(source.includes("updateBooking('${b.id}','Confirmed')"));
