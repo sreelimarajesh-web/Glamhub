@@ -195,6 +195,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .photo-preview { max-width: 420px; }
 .photo-preview img, .profile-cover img { height: 100%; object-fit: cover; width: 100%; }
 .profile-cover { height: 280px; }
+.salon-profile-heading { align-items: center; display: flex; gap: 18px; justify-content: space-between; }
+.salon-profile-heading h1, .salon-profile-heading p { margin-bottom: 4px; }
 .pill, .chip { background: var(--primary-soft); border-radius: 999px; color: var(--primary) !important; display: inline-block; font-size: .78rem; font-weight: 600; padding: 6px 9px; }
 .inline { background: transparent; color: var(--primary); display: inline; min-height: 0; padding: 0; }
 .error { color: var(--danger) !important; font-weight: 600; }

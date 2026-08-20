@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { publicSalons } from '../api/state.js';
+import { publicSalonCatalog, publicSalons } from '../api/state.js';
 
 const salons = [
   { _id: 'salon-active', ownerId: 'owner-active' },
@@ -23,4 +23,22 @@ test('public salon discovery recognizes suspension records by owner id', () => {
   const moderation = [{ id: 'legacy-id', ownerId: 'owner-active', active: false }];
 
   assert.deepEqual(publicSalons([salons[0]], activeOwnerIds, moderation), []);
+});
+
+test('public salon catalog exposes booking details only for visible salons', () => {
+  const app = {
+    services: [
+      { id: 'service-visible', salonId: 'salon-active', name: 'Haircut', price: 500, duration: 30, active: true, privateNote: 'hide me' },
+      { id: 'service-hidden', salonId: 'salon-hidden', name: 'Facial', active: true },
+    ],
+    staff: [{ id: 'staff-visible', salonId: 'salon-active', name: 'Asha', available: true, mobile: 'private' }],
+    offers: [{ id: 'offer-visible', salonId: 'salon-active', title: 'Welcome', discount: 10, active: true, clicks: 99 }],
+  };
+
+  const catalog = publicSalonCatalog(app, new Set(['salon-active']));
+  assert.deepEqual(catalog.services, [{ id: 'service-visible', salonId: 'salon-active', name: 'Haircut', category: undefined, price: 500, duration: 30, active: true }]);
+  assert.equal(catalog.staff.length, 1);
+  assert.equal(catalog.staff[0].mobile, undefined);
+  assert.equal(catalog.offers.length, 1);
+  assert.equal(catalog.offers[0].clicks, undefined);
 });

@@ -33,6 +33,18 @@ export function publicSalons(salons, activeOwnerIds, moderatedSalons = []) {
   });
 }
 
+export function publicSalonCatalog(app = {}, visibleSalonIds = new Set()) {
+  const belongsToVisibleSalon = (item) => visibleSalonIds.has(String(item?.salonId));
+  const select = (key, fields) => (app[key] || [])
+    .filter(belongsToVisibleSalon)
+    .map((item) => Object.fromEntries(fields.map((field) => [field, item[field]])));
+  return {
+    services: select('services', ['id', 'salonId', 'name', 'category', 'price', 'duration', 'active']),
+    staff: select('staff', ['id', 'salonId', 'name', 'specialization', 'hours', 'available']),
+    offers: select('offers', ['id', 'salonId', 'title', 'type', 'discount', 'start', 'end', 'active', 'status', 'approvalStatus', 'usageLimit', 'usageCount']),
+  };
+}
+
 function authorize(req) {
   const cookie = req.headers.cookie || '';
   const admin = readAdminToken(cookie, adminCredentials().password);
@@ -71,11 +83,15 @@ export default async function handler(req, res) {
     const ownerIds = [...new Set(salons.map((salon) => String(salon.ownerId)))];
     const [activeOwners, platformState] = await Promise.all([
       Account.find({ _id: { $in: ownerIds }, status: 'active' }).select('_id').lean(),
-      PlatformState.findOne({ key: 'primary' }).select('app.salons').lean(),
+      PlatformState.findOne({ key: 'primary' }).select('app.salons app.services app.staff app.offers').lean(),
     ]);
     const activeOwnerIds = new Set(activeOwners.map((account) => String(account._id)));
     const visibleSalons = publicSalons(salons, activeOwnerIds, platformState?.app?.salons || []);
-    return res.json({ salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })) });
+    const publicIds = new Set(visibleSalons.map((salon) => String(salon._id)));
+    return res.json({
+      salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })),
+      ...publicSalonCatalog(platformState?.app, publicIds),
+    });
   }
   const actor = authorize(req);
   if (!actor) return res.status(401).json({ error: 'Authentication required.' });
