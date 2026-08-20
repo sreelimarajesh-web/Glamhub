@@ -12,6 +12,9 @@ const salonSchema = new mongoose.Schema({
   whatsappNumber: { type: String, trim: true, default: '' },
   description: { type: String, trim: true, default: '' },
   image: { type: String, default: '' },
+  bookingLeadTimeHours: { type: Number, min: 0, max: 168, default: 2 },
+  bookingWindowDays: { type: Number, min: 1, max: 365, default: 7 },
+  confirmationMode: { type: String, enum: ['manual', 'automatic'], default: 'manual' },
 }, { timestamps: true, versionKey: false });
 
 // One salon per owner today. Removing this unique index later permits a 1:N model.

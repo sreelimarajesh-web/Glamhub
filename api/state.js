@@ -89,7 +89,7 @@ export default async function handler(req, res) {
     const visibleSalons = publicSalons(salons, activeOwnerIds, platformState?.app?.salons || []);
     const publicIds = new Set(visibleSalons.map((salon) => String(salon._id)));
     return res.json({
-      salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })),
+      salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image, bookingLeadTimeHours: salon.bookingLeadTimeHours ?? 2, bookingWindowDays: salon.bookingWindowDays ?? 7, confirmationMode: salon.confirmationMode || 'manual' })),
       ...publicSalonCatalog(platformState?.app, publicIds),
     });
   }

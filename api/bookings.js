@@ -17,6 +17,11 @@ function isWithinBookingWindow(isoDate) {
     return selected >= today && selected <= maxDate;
 }
 
+function isAfterMinimumLeadTime(isoDate, time, now = new Date()) {
+    const appointment = new Date(`${isoDate}T${time}:00+05:30`);
+    return !Number.isNaN(appointment.getTime()) && appointment.getTime() >= now.getTime() + (2 * 60 * 60 * 1000);
+}
+
 function isValidThirtyMinuteSlot(time) {
     const [hours, minutes] = String(time).split(':').map(Number);
     if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
@@ -121,6 +126,10 @@ module.exports = async (req, res) => {
 
             if (!isValidThirtyMinuteSlot(time)) {
                 return res.status(400).json({ error: 'Please select a time in 30-minute intervals.' });
+            }
+
+            if (!isAfterMinimumLeadTime(date, time)) {
+                return res.status(400).json({ error: 'Bookings must be made at least 2 hours in advance.' });
             }
 
             const booking = await Booking.create({
