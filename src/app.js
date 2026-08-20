@@ -65,14 +65,14 @@ async function hydrateDatabase() {
 const salon = () => db.salons.find((item) => item.id === db.activeSalonId) || db.salons[0];
 const cancellationCutoff = (salonId) => db.salons.find((item) => item.id === salonId)?.cancellationCutoffHours ?? 2;
 function ensureOwnerSalon(account, details = {}) { const existing = db.salons.find((item) => item.accountId === account.accountId || item.ownerId === account.accountId); if (existing) { db.activeSalonId = existing.id; return existing; } const created = { id: `onboarding-${account.accountId}`, accountId: account.accountId, ownerId: account.accountId, name: details.name || '', address: details.location || '', location: details.location || '', phone: '', whatsapp: '', openingHours: '', description: '', featured: false, approved: false, rating: 'New', cancellationCutoffHours: 2 }; db.salons.push(created); db.activeSalonId = created.id; return created; }
-const salonFromApi = (item) => ({ id: item.id, accountId: item.ownerId, ownerId: item.ownerId, name: item.salonName || '', phone: item.phone || '', address: item.address || '', location: item.town || '', openingHours: item.openingHours || '', whatsapp: item.whatsappNumber || '', description: item.description || '', image: item.image || '', featured: true, approved: Boolean(item.salonName), rating: 'New', cancellationCutoffHours: 2 });
+const salonFromApi = (item) => ({ id: item.id, accountId: item.ownerId, ownerId: item.ownerId, name: item.salonName || '', phone: item.phone || '', address: item.address || '', location: item.town || '', openingHours: item.openingHours || '', whatsapp: item.whatsappNumber || '', description: item.description || '', image: item.image || '', featured: true, approved: Boolean(item.salonName), rating: 'New', cancellationCutoffHours: 2, publicListing: true });
 async function hydratePublicSalons() {
   const response = await fetch('/api/state?view=salons', { cache: 'no-store' });
   if (!response.ok) return;
   const { salons = [] } = await response.json();
   const publicOwnerIds = new Set(salons.map((item) => item.ownerId));
   const existingByOwner = new Map(db.salons.map((item) => [item.ownerId || item.accountId, item]));
-  db.salons = db.salons.filter((item) => !publicOwnerIds.has(item.ownerId || item.accountId));
+  db.salons = db.salons.filter((item) => !item.publicListing && !publicOwnerIds.has(item.ownerId || item.accountId));
   db.salons.push(...salons.map((item) => ({ ...existingByOwner.get(item.ownerId), ...salonFromApi(item) })));
 }
 async function hydrateOwnedSalon() { const response = await fetch('/api/auth/salon', { cache: 'no-store' }); if (!response.ok) return null; const { salon: owned } = await response.json(); db.salons = db.salons.filter((item) => item.accountId !== session.accountId && item.ownerId !== session.accountId); if (!owned) return ensureOwnerSalon(session); const mapped = salonFromApi(owned); db.salons.push(mapped); db.activeSalonId = mapped.id; return mapped; }

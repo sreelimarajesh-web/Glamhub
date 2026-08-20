@@ -3,6 +3,7 @@ import { adminCredentials, readAdminToken } from '../lib/admin-session.js';
 import { readUserSession } from '../lib/user-session.js';
 import { PlatformState } from '../models/PlatformState.js';
 import { Salon } from '../models/Salon.js';
+import { Account } from '../models/Account.js';
 
 const noStore = (res) => res.setHeader('Cache-Control', 'private, no-store, max-age=0');
 const clone = (value) => structuredClone(value || {});
@@ -11,6 +12,26 @@ const scopedMerge = (existing = [], incoming = [], canChange) => {
   const changed = incoming.filter(canChange);
   return [...retained, ...changed];
 };
+
+const salonUnavailable = (salon) => salon && (
+  salon.accountStatus === 'suspended'
+  || salon.accountStatus === 'blocked'
+  || salon.suspended === true
+  || salon.active === false
+  || salon.approved === false
+  || salon.approvalStatus === 'pending'
+  || salon.approvalStatus === 'rejected'
+);
+
+export function publicSalons(salons, activeOwnerIds, moderatedSalons = []) {
+  const moderationBySalonId = new Map(moderatedSalons.map((salon) => [String(salon.id), salon]));
+  const moderationByOwnerId = new Map(moderatedSalons.map((salon) => [String(salon.ownerId || salon.accountId), salon]));
+  return salons.filter((salon) => {
+    if (!activeOwnerIds.has(String(salon.ownerId))) return false;
+    const moderation = moderationBySalonId.get(String(salon._id)) || moderationByOwnerId.get(String(salon.ownerId));
+    return !salonUnavailable(moderation);
+  });
+}
 
 function authorize(req) {
   const cookie = req.headers.cookie || '';
@@ -47,7 +68,14 @@ export default async function handler(req, res) {
   if (req.method === 'GET' && req.query?.view === 'salons') {
     await connectToMongoDB();
     const salons = await Salon.find({ salonNameConfirmed: true, salonName: { $nin: [null, ''] } }).lean();
-    return res.json({ salons: salons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })) });
+    const ownerIds = [...new Set(salons.map((salon) => String(salon.ownerId)))];
+    const [activeOwners, platformState] = await Promise.all([
+      Account.find({ _id: { $in: ownerIds }, status: 'active' }).select('_id').lean(),
+      PlatformState.findOne({ key: 'primary' }).select('app.salons').lean(),
+    ]);
+    const activeOwnerIds = new Set(activeOwners.map((account) => String(account._id)));
+    const visibleSalons = publicSalons(salons, activeOwnerIds, platformState?.app?.salons || []);
+    return res.json({ salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image })) });
   }
   const actor = authorize(req);
   if (!actor) return res.status(401).json({ error: 'Authentication required.' });
