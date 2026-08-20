@@ -26,7 +26,7 @@
   let page = 1;
 
   let saveTimer;
-  function save() { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { const response = await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ app:appDb, admin:adminDb, revision:stateRevision }) }); const payload=await response.json().catch(()=>({})); if(response.ok) stateRevision=payload.revision; else toast(payload.error||'Changes could not be saved.',true); }, 100); }
+  function save() { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { appDb.platformOffers=structuredClone(adminDb.platformOffers||[]); const response = await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ app:appDb, admin:adminDb, revision:stateRevision }) }); const payload=await response.json().catch(()=>({})); if(response.ok) stateRevision=payload.revision; else toast(payload.error||'Changes could not be saved.',true); }, 100); }
   function normalize() {
     appDb.salons = (appDb.salons || []).map((salon) => ({ ...salon, approvalStatus: salon.approvalStatus || (salon.approved === false ? 'pending' : 'approved'), accountStatus: salon.accountStatus || (salon.suspended ? 'suspended' : 'active'), active: salon.active !== false && salon.approved !== false && !salon.suspended }));
     appDb.customers = (appDb.customers || []).map((customer) => ({ ...customer, accountStatus: customer.accountStatus || (customer.disabled ? 'suspended' : 'active'), createdAt: customer.createdAt || '' }));
@@ -35,6 +35,9 @@
     appDb.offers ||= [];
     if (!adminDb.ownerAccounts?.length) adminDb.ownerAccounts = appDb.salons.map(salon => ({ id:salon.ownerId, name:salon.owner, email:salon.ownerEmail, mobile:salon.phone, location:salon.location, accountStatus:salon.accountStatus==='suspended'?'suspended':'active' }));
     Object.entries(defaults).forEach(([key,value]) => { if (adminDb[key] == null) adminDb[key] = structuredClone(value); });
+    // Publish admin-created offers into the owner-readable application state. The
+    // admin record remains the source of truth and owners cannot change this key.
+    appDb.platformOffers = structuredClone(adminDb.platformOffers);
     save();
   }
   const esc = (value='') => String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));

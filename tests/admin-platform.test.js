@@ -12,6 +12,14 @@ test('admin dashboard exposes every required section', async () => {
   }
 });
 
+test('admin offers are published for selection in owner campaigns', async () => {
+  const adminSource = await readFile(new URL('../js/admin-dashboard.js', import.meta.url), 'utf8');
+  const ownerSource = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  assert.match(adminSource, /appDb\.platformOffers\s*=\s*structuredClone\(adminDb\.platformOffers/);
+  assert.match(ownerSource, /availablePlatformOffers\(\)/);
+  assert.match(ownerSource, /No active offers available/);
+});
+
 test('admin migration creates protected operational records and enforcement triggers', async () => {
   const sql = await readFile(new URL('../supabase/migrations/202608160001_admin_platform.sql', import.meta.url), 'utf8');
   for (const table of ['service_categories','admin_actions','complaints','platform_notifications','notification_receipts','offer_approvals','platform_settings']) {
