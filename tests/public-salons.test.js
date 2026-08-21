@@ -32,7 +32,11 @@ test('public salon catalog exposes booking details only for visible salons', () 
       { id: 'service-hidden', salonId: 'salon-hidden', name: 'Facial', active: true },
     ],
     staff: [{ id: 'staff-visible', salonId: 'salon-active', name: 'Asha', available: true, mobile: 'private' }],
-    offers: [{ id: 'offer-visible', salonId: 'salon-active', title: 'Welcome', discount: 10, active: true, clicks: 99 }],
+    offers: [{ id: 'offer-visible', salonId: 'salon-active', title: 'Welcome', description: 'New customer saving', terms: 'One per customer', discount: 10, active: true, clicks: 99 }],
+    platformOffers: [
+      { id: 'platform-all', salonId: 'all', title: 'App special', status: 'active', internalNote: 'hide me' },
+      { id: 'platform-hidden', salonId: 'salon-hidden', title: 'Hidden salon offer', status: 'active' },
+    ],
   };
 
   const catalog = publicSalonCatalog(app, new Set(['salon-active']));
@@ -40,5 +44,10 @@ test('public salon catalog exposes booking details only for visible salons', () 
   assert.equal(catalog.staff.length, 1);
   assert.equal(catalog.staff[0].mobile, undefined);
   assert.equal(catalog.offers.length, 1);
+  assert.equal(catalog.offers[0].description, 'New customer saving');
+  assert.equal(catalog.offers[0].terms, 'One per customer');
   assert.equal(catalog.offers[0].clicks, undefined);
+  assert.equal(catalog.platformOffers.length, 1);
+  assert.equal(catalog.platformOffers[0].title, 'App special');
+  assert.equal(catalog.platformOffers[0].internalNote, undefined);
 });
