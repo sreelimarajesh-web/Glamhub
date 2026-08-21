@@ -18,6 +18,8 @@ test('admin offers are published for selection in owner campaigns', async () => 
   assert.match(adminSource, /appDb\.platformOffers\s*=\s*structuredClone\(adminDb\.platformOffers/);
   assert.match(ownerSource, /availablePlatformOffers\(\)/);
   assert.match(ownerSource, /No active offers available/);
+  assert.match(adminSource, /item\.active=item\.status==='active'/);
+  assert.match(adminSource, /item\.approvalStatus=action==='approve'\?'approved':'rejected'/);
 });
 
 test('admin migration creates protected operational records and enforcement triggers', async () => {

@@ -16,3 +16,11 @@ test('booking service step keeps the salon inherited from its launch context', (
   assert.match(booking, /salonItem\?\.name/);
   assert.doesNotMatch(booking, /id="book-salon"/);
 });
+
+test('salon profile includes eligible salon and platform offers', () => {
+  assert.match(source, /const activeSalonOffers =/);
+  assert.match(source, /availablePlatformOffers\(salonId\)/);
+  const profile = source.slice(source.indexOf('function salonProfile()'), source.indexOf('function availableSlots'));
+  assert.match(profile, /activeSalonOffers\(s\.id\)/);
+  assert.match(profile, /offerCard\(offer, s\.id\)/);
+});
