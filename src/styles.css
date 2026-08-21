@@ -232,6 +232,75 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .profile-cover { height: 280px; }
 .salon-profile-heading { align-items: center; display: flex; gap: 18px; justify-content: space-between; }
 .salon-profile-heading h1, .salon-profile-heading p { margin-bottom: 4px; }
+
+/* Mobile-first salon storefront */
+main:has(.salon-detail) { max-width: 980px; padding-top: 18px; }
+.salon-detail { background: #fff; border: 1px solid #eef2f6; border-radius: 20px; box-shadow: 0 8px 30px rgba(15,23,42,.06); overflow: hidden; }
+.salon-hero { aspect-ratio: 16 / 8; background: #e8edf4; overflow: hidden; position: relative; }
+.salon-hero img { height: 100%; object-fit: cover; opacity: 0; position: relative; transition: opacity .25s ease; width: 100%; z-index: 1; }
+.salon-hero.loaded img { opacity: 1; }
+.salon-image-skeleton { animation: salon-shimmer 1.35s infinite; background: linear-gradient(100deg,#e8edf4 25%,#f8fafc 42%,#e8edf4 60%); background-size: 250% 100%; inset: 0; position: absolute; }
+@keyframes salon-shimmer { to { background-position-x: -250%; } }
+.best-seller { background: rgba(17,24,39,.88); border-radius: 999px; color: #fff; font-size: .76rem; font-weight: 700; padding: 7px 10px; position: absolute; right: 14px; top: 14px; z-index: 2; }
+.salon-summary { align-items: center; display: flex; gap: 18px; justify-content: space-between; padding: 22px 24px 8px; }
+.salon-summary-copy { min-width: 0; }
+.salon-summary h1 { font-size: 1.75rem; margin: 0 0 7px; overflow-wrap: anywhere; }
+.salon-summary p { align-items: center; color: var(--muted); display: flex; gap: 5px; margin: 0 0 7px; }
+.salon-summary svg { height: 17px; min-width: 17px; width: 17px; }
+.salon-rating { color: #9a6700; font-size: .86rem; font-weight: 700; }
+.salon-rating small { color: var(--muted); font-weight: 500; }
+.book-now { min-height: 48px; min-width: 122px; }
+.salon-description { color: var(--muted); margin: 5px 24px 18px; }
+.quick-actions { border-bottom: 8px solid #f4f6f8; border-top: 1px solid #edf0f4; display: grid; grid-template-columns: repeat(3,1fr); overflow: visible; }
+.quick-actions a, .quick-actions button { background: #fff; border-radius: 0; color: #344054; display: flex; flex-direction: column; gap: 5px; min-height: 72px; padding: 10px; width: 100%; }
+.quick-actions a:not(:last-child), .quick-actions button:not(:last-child) { border-right: 1px solid #edf0f4; }
+.quick-actions a:hover, .quick-actions button:hover { background: var(--primary-soft); color: var(--primary); }
+.quick-actions svg { height: 21px; width: 21px; }
+.quick-actions span { font-size: .78rem; }
+.salon-section { border-bottom: 8px solid #f4f6f8; padding: 22px 24px 24px; scroll-margin-top: 76px; }
+.salon-section:last-child { border-bottom: 0; }
+.salon-section > h2 { font-size: 1.28rem; margin: 0 0 16px; }
+.facilities > h2 { color: #475467; font-size: .76rem; letter-spacing: .09em; }
+.horizontal-strip, .service-tabs, .staff-carousel, .offer-carousel { -webkit-overflow-scrolling: touch; overflow-x: auto; scrollbar-width: none; }
+.horizontal-strip::-webkit-scrollbar, .service-tabs::-webkit-scrollbar, .staff-carousel::-webkit-scrollbar, .offer-carousel::-webkit-scrollbar { display: none; }
+.horizontal-strip { display: flex; gap: 9px; }
+.facility-chip { align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; color: #344054; display: inline-flex; flex: 0 0 auto; font-size: .78rem; font-weight: 600; gap: 6px; min-height: 38px; padding: 8px 12px; }
+.facility-chip svg { color: var(--primary); height: 17px; width: 17px; }
+.service-tabs { border-bottom: 1px solid #e5e7eb; display: flex; gap: 24px; margin: 0 0 18px; }
+.service-tabs button { background: transparent; border-radius: 0; color: var(--muted); flex: 0 0 auto; min-height: 44px; padding: 8px 1px; position: relative; }
+.service-tabs button:hover, .service-tabs button.active { background: transparent; color: #111827; }
+.service-tabs button.active::after { background: #111827; border-radius: 2px; bottom: -1px; content: ''; height: 3px; left: 0; position: absolute; right: 0; }
+.profile-service-grid { display: grid; gap: 12px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.profile-service-card { align-items: center; border: 1px solid #e6eaf0; border-radius: 14px; display: flex; gap: 14px; justify-content: space-between; min-width: 0; padding: 17px; }
+.profile-service-card > div { min-width: 0; }
+.profile-service-card h3 { font-size: 1rem; margin: 0 0 5px; overflow-wrap: anywhere; }
+.profile-service-card p { color: var(--muted); font-size: .8rem; margin: 0 0 5px; }
+.profile-service-card .duration { color: var(--muted); display: block; font-size: .75rem; }
+.profile-service-card .service-price { margin: 8px 0 0; }
+.profile-service-card > button { flex: 0 0 auto; min-height: 44px; min-width: 76px; }
+.staff-carousel { display: grid; gap: 12px; grid-auto-columns: 124px; grid-auto-flow: column; padding: 2px 3px 8px; scroll-snap-type: x proximity; }
+.staff-item { background: #fff; border: 1px solid transparent; color: var(--text); display: flex; flex-direction: column; min-height: 172px; padding: 12px 8px; scroll-snap-align: start; width: 124px; }
+.staff-item:hover, .staff-item.selected { background: var(--primary-soft); border-color: #93b4ff; color: var(--text); }
+.staff-avatar { align-items: center; background: linear-gradient(135deg,#dbeafe,#fce7f3); border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px #dbe2ea; color: var(--primary-dark); display: flex; font-size: .86rem; height: 76px; justify-content: center; margin-bottom: 8px; object-fit: cover; width: 76px; }
+.staff-avatar.any { background: var(--primary); color: white; }
+.staff-item b { font-size: .84rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.staff-item small { color: var(--muted); font-size: .68rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.staff-item em { color: #a16207; font-size: .7rem; font-style: normal; }
+.offer-carousel { display: grid; gap: 12px; grid-auto-columns: minmax(250px,36%); grid-auto-flow: column; padding: 2px 3px 10px; scroll-snap-type: x proximity; }
+.profile-offer { background: linear-gradient(135deg,#eef2ff,#f5f3ff); border: 1px solid #dbe2ff; border-radius: 16px; display: flex; flex-direction: column; min-height: 215px; padding: 18px; scroll-snap-align: start; }
+.profile-offer.offer-1 { background: linear-gradient(135deg,#ecfeff,#ecfdf5); border-color: #bbf7d0; }
+.profile-offer.offer-2 { background: linear-gradient(135deg,#fff7ed,#fef2f2); border-color: #fed7aa; }
+.profile-offer.offer-3 { background: linear-gradient(135deg,#fdf2f8,#faf5ff); border-color: #f5d0fe; }
+.profile-offer > span { color: var(--primary); font-size: .72rem; font-weight: 800; letter-spacing: .05em; }
+.profile-offer h3 { margin: 8px 0 5px; }
+.profile-offer p { color: #475467; font-size: .8rem; margin: 0 0 8px; }
+.profile-offer code { background: rgba(255,255,255,.7); border: 1px dashed #94a3b8; border-radius: 6px; margin: 2px 0 7px; padding: 4px 7px; width: max-content; }
+.profile-offer small { color: var(--muted); font-size: .68rem; }
+.profile-offer button { align-self: flex-start; margin-top: auto; min-height: 44px; }
+.empty-state-inline { color: var(--muted); grid-column: 1/-1; margin: 4px 0; }
+.salon-not-found { padding: 60px 20px; text-align: center; }
+.salon-toast { animation: toast-in .2s ease; background: #111827; border-radius: 9px; bottom: 26px; color: #fff; font-size: .85rem; left: 50%; padding: 11px 16px; position: fixed; transform: translateX(-50%); z-index: 200; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%,8px); } }
 .pill, .chip { background: var(--primary-soft); border-radius: 999px; color: var(--primary) !important; display: inline-block; font-size: .78rem; font-weight: 600; padding: 6px 9px; }
 .inline { background: transparent; color: var(--primary); display: inline; min-height: 0; padding: 0; }
 .error { color: var(--danger) !important; font-weight: 600; }
@@ -292,6 +361,29 @@ footer { display: none; }
   .profile-meta { align-items: flex-start; flex-direction: column; gap: 2px; }
   .profile-meta i { display: none; }
   .profile-metrics { gap: 8px; grid-template-columns: 1fr; }
+  main:has(.salon-detail) { padding: 0 0 86px; }
+  .salon-detail { border: 0; border-radius: 0; box-shadow: none; }
+  .top:has(+ main .salon-detail) { padding-block: 8px; }
+  .top:has(+ main .salon-detail) .zaya-brand img { height: 36px; width: 36px; }
+  .top:has(+ main .salon-detail) .zaya-brand strong { font-size: .88rem; white-space: normal; }
+  .top:has(+ main .salon-detail) .zaya-brand small { font-size: .54rem; }
+  .salon-hero { aspect-ratio: 16 / 8; }
+  .salon-summary { padding: 18px 16px 7px; }
+  .salon-summary h1 { font-size: 1.45rem; }
+  .salon-description { font-size: .86rem; margin: 5px 16px 16px; }
+  .book-now { min-width: 104px; padding-inline: 12px; }
+  .salon-section { padding: 20px 16px 22px; }
+  .profile-service-grid { grid-template-columns: 1fr; }
+  .profile-service-card { padding: 15px; }
+  .offer-carousel { grid-auto-columns: minmax(252px,82%); }
+}
+
+@media (max-width: 390px) {
+  .top:has(+ main .salon-detail) .zaya-brand strong { max-width: 175px; }
+  .salon-summary { gap: 10px; }
+  .salon-summary h1 { font-size: 1.32rem; }
+  .book-now { min-width: 96px; }
+  .profile-service-card > button { min-width: 68px; }
 }
 
 /* Guided appointment booking */

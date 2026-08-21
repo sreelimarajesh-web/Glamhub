@@ -22,5 +22,6 @@ test('salon profile includes eligible salon and platform offers', () => {
   assert.match(source, /availablePlatformOffers\(salonId\)/);
   const profile = source.slice(source.indexOf('function salonProfile()'), source.indexOf('function availableSlots'));
   assert.match(profile, /activeSalonOffers\(s\.id\)/);
-  assert.match(profile, /offerCard\(offer, s\.id\)/);
+  assert.match(profile, /class="profile-offer/);
+  assert.match(profile, /applyProfileOffer\('\$\{offer\.id\}'\)/);
 });
