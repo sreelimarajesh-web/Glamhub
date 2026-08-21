@@ -73,7 +73,7 @@ const salonFromApi = (item) => ({ id: item.id, accountId: item.ownerId, ownerId:
 async function hydratePublicSalons() {
   const response = await fetch('/api/state?view=salons', { cache: 'no-store' });
   if (!response.ok) return;
-  const { salons = [], services = [], staff = [], offers = [] } = await response.json();
+  const { salons = [], services = [], staff = [], offers = [], platformOffers = [] } = await response.json();
   const publicOwnerIds = new Set(salons.map((item) => item.ownerId));
   const existingByOwner = new Map(db.salons.map((item) => [item.ownerId || item.accountId, item]));
   db.salons = db.salons.filter((item) => !item.publicListing && !publicOwnerIds.has(item.ownerId || item.accountId));
@@ -83,6 +83,7 @@ async function hydratePublicSalons() {
   db.services = mergePublicCatalog(db.services, services);
   db.staff = mergePublicCatalog(db.staff, staff);
   db.offers = mergePublicCatalog(db.offers, offers);
+  db.platformOffers = platformOffers;
 }
 async function hydrateOwnedSalon() { const response = await fetch('/api/auth/salon', { cache: 'no-store' }); if (!response.ok) return null; const { salon: owned } = await response.json(); db.salons = db.salons.filter((item) => item.accountId !== session.accountId && item.ownerId !== session.accountId); if (!owned) return ensureOwnerSalon(session); const mapped = salonFromApi(owned); db.salons.push(mapped); db.activeSalonId = mapped.id; return mapped; }
 const currentCustomer = () => db.customers.find((item) => item.id === db.registeredCustomerId) || db.customers[0];
@@ -107,7 +108,7 @@ const card = (html, className = '') => `<section class="card ${className}">${htm
 const chip = (text) => `<span class="chip">${text}</span>`;
 const statusChip = (status) => `<span class="status-pill status-${status.toLowerCase().replace(/[^a-z]+/g, '-')}">${status === 'Pending' ? 'Awaiting salon' : status}</span>`;
 const salonPhoto = (salonItem) => salonItem.image?.startsWith('http') || salonItem.image?.startsWith('data:') ? salonItem.image : fallbackSalonPhoto;
-const offerDiscount = (offer) => offer.type === 'Fixed amount' ? `${fmt(offer.discount)} OFF` : `${offer.discount}% OFF`;
+const offerDiscount = (offer) => ['Fixed amount', 'fixed'].includes(offer.type) ? `${fmt(offer.discount)} OFF` : `${offer.discount}% OFF`;
 const offerIsEligible = (offer) => offer && offer.active !== false && offer.status !== 'rejected' && offer.status !== 'inactive' && offer.approvalStatus !== 'rejected' && offer.approvalStatus !== 'pending' && (!offer.start || offer.start <= today) && (!offer.end || offer.end >= today) && (!offer.usageLimit || (offer.usageCount || 0) < offer.usageLimit);
 const availablePlatformOffers = () => (db.platformOffers || [])
   .filter((offer) => offer.salonId === 'all' || offer.salonId === db.activeSalonId)
@@ -148,9 +149,13 @@ window.forgotPassword = () => { authNotice = 'Password recovery instructions wil
 window.logout = async () => { await fetch('/api/auth/logout', { method: 'POST' }); session = null; db.role = 'customer'; db.route = 'home'; await hydratePublicSalons(); render(); };
 function customerHome() {
   const featured = db.salons.filter((item) => item.featured && salonAcceptsBookings(item));
+  const featuredOffer = (db.platformOffers || []).map((offer) => ({ ...offer, start: offer.startDate, end: offer.endDate })).find(offerIsEligible)
+    || db.offers.find(offerIsEligible);
+  const offerSalon = featuredOffer?.salonId === 'all' ? null : db.salons.find((item) => item.id === featuredOffer?.salonId);
   return `<div class="discovery-home">
     <form class="search-bar" onsubmit="event.preventDefault();navigate('explore')"><span class="search-icon">⌕</span><input aria-label="Search salons and services" placeholder="Search salons or location" readonly><button type="submit">Search</button></form>
     ${db.appBanner ? `<div class="app-banner">${db.appBanner}</div>` : ''}
+    ${featuredOffer ? `<section class="home-offer"><div><p class="eyebrow">Limited-time offer</p><h2>${featuredOffer.title}</h2>${featuredOffer.description ? `<p>${featuredOffer.description}</p>` : ''}<p><strong>${offerDiscount(featuredOffer)}</strong>${featuredOffer.end ? ` · Valid until ${featuredOffer.end}` : ''}${featuredOffer.minValue ? ` · Minimum booking ${fmt(featuredOffer.minValue)}` : ''}</p></div><button onclick="${offerSalon ? `startSalonBooking('${offerSalon.id}')` : "navigate('explore')"}">${offerSalon ? `Book at ${offerSalon.name}` : 'Find a salon'}</button></section>` : ''}
     <div class="section-title"><h2>Recommended</h2><button onclick="navigate('explore')">See all</button></div>
     <div class="salon-carousel">${featured.map(discoverySalonCard).join('') || card('<div class="empty-state"><b>No salons are available yet</b><p>Approved salons will appear here when they join Zaya.</p></div>')}</div>
     ${db.salons.some(salonAcceptsBookings) ? `<div class="section-title"><h2>Recently viewed</h2></div><div class="salon-carousel compact">${db.salons.filter(salonAcceptsBookings).slice(1, 4).map(discoverySalonCard).join('')}</div>` : ''}
@@ -197,7 +202,7 @@ function booking() {
   let content = '';
   if (pending.step === 1) {
     const services = salonServices(pending.salonId);
-    content = `<div class="booking-step-head"><p>Step 1 of 4</p><h2>Choose a service</h2><span>Select what you would like to book.</span></div><label>Salon<select id="book-salon" onchange="selectBookingSalon(this.value)">${db.salons.filter(salonAcceptsBookings).map((item) => `<option value="${item.id}" ${item.id === pending.salonId ? 'selected' : ''}>${item.name}</option>`).join('')}</select></label><div class="booking-choice-list">${services.map((item) => `<button class="booking-choice ${item.id === pending.serviceId ? 'selected' : ''}" onclick="selectBookingService('${item.id}')"><span><b>${item.name}</b><small>${item.category} · ${item.duration} min</small></span><strong>${fmt(item.price)}</strong><i>✓</i></button>`).join('') || '<p class="empty">No services are currently available.</p>'}</div>${bookingActions(1, Boolean(pending.serviceId))}`;
+    content = `<div class="booking-step-head"><p>Step 1 of 4</p><h2>Choose a service</h2><span>Select what you would like to book at <strong>${salonItem?.name || 'this salon'}</strong>.</span></div><div class="booking-choice-list">${services.map((item) => `<button class="booking-choice ${item.id === pending.serviceId ? 'selected' : ''}" onclick="selectBookingService('${item.id}')"><span><b>${item.name}</b><small>${item.category} · ${item.duration} min</small></span><strong>${fmt(item.price)}</strong><i>✓</i></button>`).join('') || '<p class="empty">No services are currently available.</p>'}</div>${bookingActions(1, Boolean(pending.serviceId))}`;
   } else if (pending.step === 2) {
     const anySelected = pending.staffId === 'any';
     content = `<div class="booking-step-head"><p>Step 2 of 4</p><h2>Choose a specialist</h2><span>Pick a team member or choose the first available.</span></div><div class="specialist-grid"><button class="specialist-card ${anySelected ? 'selected' : ''}" onclick="selectBookingStaff('any')"><span class="specialist-avatar">Any</span><b>Any specialist</b><small>First available</small><i>✓</i></button>${staff.map((person) => `<button class="specialist-card ${person.id === pending.staffId ? 'selected' : ''}" onclick="selectBookingStaff('${person.id}')"><span class="specialist-avatar">${person.name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2)}</span><b>${person.name}</b><small>${person.specialization}</small><i>✓</i></button>`).join('')}</div>${bookingActions(2, Boolean(pending.staffId))}`;

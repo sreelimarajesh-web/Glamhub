@@ -41,7 +41,10 @@ export function publicSalonCatalog(app = {}, visibleSalonIds = new Set()) {
   return {
     services: select('services', ['id', 'salonId', 'name', 'category', 'price', 'duration', 'active']),
     staff: select('staff', ['id', 'salonId', 'name', 'specialization', 'hours', 'available']),
-    offers: select('offers', ['id', 'salonId', 'title', 'type', 'discount', 'start', 'end', 'active', 'status', 'approvalStatus', 'usageLimit', 'usageCount']),
+    offers: select('offers', ['id', 'salonId', 'title', 'description', 'type', 'discount', 'service', 'segment', 'start', 'end', 'terms', 'active', 'status', 'approvalStatus', 'usageLimit', 'usageCount']),
+    platformOffers: (app.platformOffers || [])
+      .filter((item) => item.salonId === 'all' || belongsToVisibleSalon(item))
+      .map((item) => Object.fromEntries(['id', 'salonId', 'title', 'description', 'type', 'discount', 'minValue', 'startDate', 'endDate', 'status', 'usageLimit'].map((field) => [field, item[field]]))),
   };
 }
 
@@ -83,7 +86,7 @@ export default async function handler(req, res) {
     const ownerIds = [...new Set(salons.map((salon) => String(salon.ownerId)))];
     const [activeOwners, platformState] = await Promise.all([
       Account.find({ _id: { $in: ownerIds }, status: 'active' }).select('_id').lean(),
-      PlatformState.findOne({ key: 'primary' }).select('app.salons app.services app.staff app.offers').lean(),
+      PlatformState.findOne({ key: 'primary' }).select('app.salons app.services app.staff app.offers app.platformOffers').lean(),
     ]);
     const activeOwnerIds = new Set(activeOwners.map((account) => String(account._id)));
     const visibleSalons = publicSalons(salons, activeOwnerIds, platformState?.app?.salons || []);
