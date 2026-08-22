@@ -107,7 +107,7 @@ module.exports = async (req, res) => {
     if (req.method === 'POST') {
         try {
             const payload = parseJsonBody(req.body);
-            const { name, date, time, service, notes = '', idToken } = payload;
+            const { name, mobile, date, time, service, notes = '', idToken } = payload;
             const authResult = await verifyGoogleIdToken(idToken);
 
             if (!authResult.ok) {
@@ -116,7 +116,7 @@ module.exports = async (req, res) => {
 
             const authenticatedEmail = authResult.profile.email;
 
-            if (!name || !authenticatedEmail || !date || !time || !service) {
+            if (!name || !String(mobile || '').trim() || !authenticatedEmail || !date || !time || !service) {
                 return res.status(400).json({ error: 'Please complete all required booking details.' });
             }
 
@@ -135,6 +135,7 @@ module.exports = async (req, res) => {
             const booking = await Booking.create({
                 name: String(name).trim(),
                 email: String(authenticatedEmail).trim(),
+                mobile: String(mobile).trim(),
                 date,
                 time,
                 service,

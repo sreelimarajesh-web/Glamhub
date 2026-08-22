@@ -223,13 +223,14 @@ bookingForm.addEventListener('submit', async (event) => {
     const booking = {
         name: formData.get('name')?.trim(),
         email: formData.get('email')?.trim(),
+        mobile: formData.get('mobile')?.trim(),
         date: formData.get('date'),
         time: formData.get('time'),
         service: formData.get('service'),
         notes: formData.get('notes')?.trim() || ''
     };
 
-    if (!booking.name || !booking.email || !booking.date || !booking.time || !booking.service) {
+    if (!booking.name || !booking.email || !booking.mobile || !booking.date || !booking.time || !booking.service) {
         showMessage(errorMessage, 'Please complete all required booking details.');
         return;
     }
