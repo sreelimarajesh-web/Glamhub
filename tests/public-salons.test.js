@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { publicSalonCatalog, publicSalons } from '../api/state.js';
+import { publicSalonCatalog, publicSalons, serializePublicSalon } from '../api/state.js';
 
 const salons = [
   { _id: 'salon-active', ownerId: 'owner-active' },
@@ -23,6 +23,24 @@ test('public salon discovery recognizes suspension records by owner id', () => {
   const moderation = [{ id: 'legacy-id', ownerId: 'owner-active', active: false }];
 
   assert.deepEqual(publicSalons([salons[0]], activeOwnerIds, moderation), []);
+});
+
+test('public salon response identifies moderated salons as approved and active', () => {
+  const salon = {
+    _id: 'salon-active',
+    ownerId: 'owner-active',
+    salonName: 'Glow Studio',
+    bookingLeadTimeHours: 4,
+  };
+
+  const published = serializePublicSalon(salon);
+
+  assert.equal(published.id, 'salon-active');
+  assert.equal(published.approved, true);
+  assert.equal(published.approvalStatus, 'approved');
+  assert.equal(published.accountStatus, 'active');
+  assert.equal(published.active, true);
+  assert.equal(published.bookingLeadTimeHours, 4);
 });
 
 test('public salon catalog exposes booking details only for visible salons', () => {
