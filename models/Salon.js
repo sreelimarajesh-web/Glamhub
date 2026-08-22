@@ -8,6 +8,8 @@ const salonSchema = new mongoose.Schema({
   phone: { type: String, trim: true, default: '' },
   address: { type: String, trim: true, default: '' },
   town: { type: String, trim: true, default: '' },
+  latitude: { type: Number, min: -90, max: 90, default: null },
+  longitude: { type: Number, min: -180, max: 180, default: null },
   openingHours: { type: String, trim: true, default: '' },
   whatsappNumber: { type: String, trim: true, default: '' },
   description: { type: String, trim: true, default: '' },

@@ -53,6 +53,8 @@ export function serializePublicSalon(salon) {
     phone: salon.phone,
     address: salon.address,
     town: salon.town,
+    latitude: salon.latitude ?? null,
+    longitude: salon.longitude ?? null,
     openingHours: salon.openingHours,
     whatsappNumber: salon.whatsappNumber,
     description: salon.description,

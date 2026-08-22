@@ -44,6 +44,8 @@ test('public salon response identifies moderated salons as approved and active',
     _id: 'salon-active',
     ownerId: 'owner-active',
     salonName: 'Glow Studio',
+    latitude: 10.7867,
+    longitude: 76.6548,
     bookingLeadTimeHours: 4,
   };
 
@@ -55,6 +57,8 @@ test('public salon response identifies moderated salons as approved and active',
   assert.equal(published.accountStatus, 'active');
   assert.equal(published.active, true);
   assert.equal(published.bookingLeadTimeHours, 4);
+  assert.equal(published.latitude, 10.7867);
+  assert.equal(published.longitude, 76.6548);
 });
 
 test('public salon catalog exposes booking details only for visible salons', () => {
