@@ -11,7 +11,7 @@ const salons = [
 test('public salon discovery excludes suspended salons and inactive owner accounts', () => {
   const activeOwnerIds = new Set(['owner-active', 'owner-suspended']);
   const moderation = [
-    { id: 'salon-active', ownerId: 'owner-active', accountStatus: 'active', active: true },
+    { id: 'salon-active', ownerId: 'owner-active', approvalStatus: 'approved', accountStatus: 'active', active: true },
     { id: 'salon-suspended', ownerId: 'owner-suspended', accountStatus: 'suspended', suspended: true },
   ];
 
@@ -23,6 +23,20 @@ test('public salon discovery recognizes suspension records by owner id', () => {
   const moderation = [{ id: 'legacy-id', ownerId: 'owner-active', active: false }];
 
   assert.deepEqual(publicSalons([salons[0]], activeOwnerIds, moderation), []);
+});
+
+test('public salon discovery requires explicit approval and activation', () => {
+  const activeOwnerIds = new Set(['owner-active']);
+  const variants = [
+    [],
+    [{ id: 'salon-active', ownerId: 'owner-active', approvalStatus: 'pending', accountStatus: 'active', active: true }],
+    [{ id: 'salon-active', ownerId: 'owner-active', approvalStatus: 'approved', accountStatus: 'inactive', active: true }],
+    [{ id: 'salon-active', ownerId: 'owner-active', approvalStatus: 'approved', accountStatus: 'active', active: false }],
+  ];
+
+  for (const moderation of variants) {
+    assert.deepEqual(publicSalons([salons[0]], activeOwnerIds, moderation), []);
+  }
 });
 
 test('public salon response identifies moderated salons as approved and active', () => {

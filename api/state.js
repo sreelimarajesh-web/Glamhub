@@ -13,15 +13,12 @@ const scopedMerge = (existing = [], incoming = [], canChange) => {
   return [...retained, ...changed];
 };
 
-const salonUnavailable = (salon) => salon && (
-  salon.accountStatus === 'suspended'
-  || salon.accountStatus === 'blocked'
-  || salon.suspended === true
-  || salon.active === false
-  || salon.approved === false
-  || salon.approvalStatus === 'pending'
-  || salon.approvalStatus === 'rejected'
-);
+const salonIsPublished = (salon) => salon
+  && salon.approvalStatus === 'approved'
+  && salon.accountStatus === 'active'
+  && salon.active === true
+  && salon.approved !== false
+  && salon.suspended !== true;
 
 export function publicSalons(salons, activeOwnerIds, moderatedSalons = []) {
   const moderationBySalonId = new Map(moderatedSalons.map((salon) => [String(salon.id), salon]));
@@ -29,7 +26,7 @@ export function publicSalons(salons, activeOwnerIds, moderatedSalons = []) {
   return salons.filter((salon) => {
     if (!activeOwnerIds.has(String(salon.ownerId))) return false;
     const moderation = moderationBySalonId.get(String(salon._id)) || moderationByOwnerId.get(String(salon.ownerId));
-    return !salonUnavailable(moderation);
+    return salonIsPublished(moderation);
   });
 }
 
