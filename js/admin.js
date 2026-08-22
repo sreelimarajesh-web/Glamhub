@@ -92,6 +92,7 @@ function renderBookingDetails(booking) {
             <p><strong>Service:</strong> ${booking.service}</p>
             <p><strong>Schedule:</strong> ${formatDate(booking.date)} at ${formatTime(booking.time)}</p>
             <p><strong>Email:</strong> ${booking.email}</p>
+            <p><strong>Mobile:</strong> ${booking.mobile}</p>
             <p><strong>Status:</strong> ${booking.status || 'active'}</p>
             <p><strong>Notes:</strong> ${booking.notes || '—'}</p>
             ${isAccepted ? '<p><strong>Confirmation:</strong> Booking accepted and confirmation email sent (if SMTP configured).</p>' : ''}
