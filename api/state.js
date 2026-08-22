@@ -48,6 +48,31 @@ export function publicSalonCatalog(app = {}, visibleSalonIds = new Set()) {
   };
 }
 
+export function serializePublicSalon(salon) {
+  return {
+    id: String(salon._id),
+    ownerId: String(salon.ownerId),
+    salonName: salon.salonName,
+    phone: salon.phone,
+    address: salon.address,
+    town: salon.town,
+    openingHours: salon.openingHours,
+    whatsappNumber: salon.whatsappNumber,
+    description: salon.description,
+    image: salon.image,
+    bookingLeadTimeHours: salon.bookingLeadTimeHours ?? 2,
+    bookingWindowDays: salon.bookingWindowDays ?? 7,
+    confirmationMode: salon.confirmationMode || 'manual',
+    // Reaching this serializer means the salon has already passed the public
+    // moderation and owner-account filters above. Include that decision so the
+    // customer client does not mistake a published salon for a pending one.
+    approved: true,
+    approvalStatus: 'approved',
+    accountStatus: 'active',
+    active: true,
+  };
+}
+
 function authorize(req) {
   const cookie = req.headers.cookie || '';
   const admin = readAdminToken(cookie, adminCredentials().password);
@@ -92,7 +117,7 @@ export default async function handler(req, res) {
     const visibleSalons = publicSalons(salons, activeOwnerIds, platformState?.app?.salons || []);
     const publicIds = new Set(visibleSalons.map((salon) => String(salon._id)));
     return res.json({
-      salons: visibleSalons.map((salon) => ({ id: String(salon._id), ownerId: String(salon.ownerId), salonName: salon.salonName, phone: salon.phone, address: salon.address, town: salon.town, openingHours: salon.openingHours, whatsappNumber: salon.whatsappNumber, description: salon.description, image: salon.image, bookingLeadTimeHours: salon.bookingLeadTimeHours ?? 2, bookingWindowDays: salon.bookingWindowDays ?? 7, confirmationMode: salon.confirmationMode || 'manual' })),
+      salons: visibleSalons.map(serializePublicSalon),
       ...publicSalonCatalog(platformState?.app, publicIds),
     });
   }
