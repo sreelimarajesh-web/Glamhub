@@ -13,3 +13,14 @@ test('confirmation back button returns to slot selection after a hold expires', 
   assert.match(handler, /pending\.step = 3/);
   assert.match(confirmation, /onclick="returnToSlotSelection\(\)"/);
 });
+
+test('an expired client-side hold does not prevent confirming an available appointment', () => {
+  const booking = source.slice(source.indexOf('function booking()'), source.indexOf('window.confirmBooking'));
+  const confirmation = source.slice(source.indexOf('window.confirmBooking'), source.indexOf('async function persistBookingRequest'));
+
+  assert.match(booking, /const selectionValid = bookingSelectionIsValid\(pending\)/);
+  assert.match(booking, /selectionValid \? '' : 'disabled'/);
+  assert.match(confirmation, /if \(!bookingSelectionIsValid\(pending\)\)/);
+  assert.doesNotMatch(confirmation, /heldUntil/);
+  assert.doesNotMatch(confirmation, /slot hold expired/i);
+});
