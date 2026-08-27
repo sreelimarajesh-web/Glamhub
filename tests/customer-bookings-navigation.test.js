@@ -25,3 +25,14 @@ test('signed-out bookings route asks for a customer login and returns to booking
   assert.match(source, /authModal = \{ trigger: 'universal', returnRoute: requestedRoute \}/);
   assert.match(source, /loginRole = ownerRoute \? 'salon_owner' : 'customer'/);
 });
+
+test('bookings route resolves the signed-in customer before its first render', () => {
+  assert.match(source, /if \(session\?\.role === 'customer'\) ensureSessionCustomer\(\);\s+await hydratePublicSalons\(\);/);
+  assert.match(source, /const customerOwnsBooking = \(bookingItem\) => \{ const customer = currentCustomer\(\); return Boolean\(customer &&/);
+});
+
+test('booking history remains renderable when old salon or service data is unavailable', () => {
+  assert.match(source, /const salonName = s\?\.name \|\| 'Salon unavailable'/);
+  assert.match(source, /const serviceName = service\?\.name \|\| 'Service unavailable'/);
+  assert.match(source, /s\?\.whatsapp \? `<a/);
+});

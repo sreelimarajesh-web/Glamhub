@@ -67,6 +67,10 @@ async function hydrateDatabase() {
   const payload = await response.json();
   if (payload.app && Object.keys(payload.app).length) db = { ...db, ...payload.app };
   stateRevision = payload.revision || 0;
+  // Resolve the signed-in customer before rendering a protected route. Without
+  // this, loading /bookings directly can render against an unrelated (or
+  // missing) customer while the session is still being hydrated.
+  if (session?.role === 'customer') ensureSessionCustomer();
   await hydratePublicSalons();
   if (session?.role === 'owner') await hydrateOwnedSalon();
   render();
@@ -96,7 +100,10 @@ async function hydratePublicSalons() {
   db.platformOffers = platformOffers;
 }
 async function hydrateOwnedSalon() { const response = await fetch('/api/auth/salon', { cache: 'no-store' }); if (!response.ok) return null; const { salon: owned } = await response.json(); db.salons = db.salons.filter((item) => item.accountId !== session.accountId && item.ownerId !== session.accountId); if (!owned) return ensureOwnerSalon(session); const mapped = salonFromApi(owned); db.salons.push(mapped); db.activeSalonId = mapped.id; return mapped; }
-const currentCustomer = () => db.customers.find((item) => item.id === db.registeredCustomerId) || db.customers[0];
+const currentCustomer = () => db.customers.find((item) => item.accountId === session?.accountId)
+  || db.customers.find((item) => item.email && item.email.toLowerCase() === session?.email?.toLowerCase())
+  || db.customers.find((item) => item.id === db.registeredCustomerId)
+  || null;
 const bookingVisitorId = () => currentCustomer()?.id || 'anonymous-visitor';
 function ensureSessionCustomer() {
   if (!session || session.role === 'owner') return null;
@@ -113,7 +120,7 @@ function ensureSessionCustomer() {
 }
 const salonServices = (salonId = db.activeSalonId) => db.services.filter((item) => item.salonId === salonId && item.active);
 const fmt = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
-const wa = (phone, message) => `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+const wa = (phone = '', message) => `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
 const card = (html, className = '') => `<section class="card ${className}">${html}</section>`;
 const chip = (text) => `<span class="chip">${text}</span>`;
 const statusChip = (status) => `<span class="status-pill status-${status.toLowerCase().replace(/[^a-z]+/g, '-')}">${status === 'Pending' ? 'Awaiting salon' : status}</span>`;
@@ -348,11 +355,11 @@ async function submitBookingRequest(pending) {
   db.route = pending.walkIn ? 'owner-bookings' : 'booking-details';
   render();
 }
-const customerOwnsBooking = (bookingItem) => bookingItem.customerId === currentCustomer().id || bookingItem.bookedByCustomerId === currentCustomer().id;
+const customerOwnsBooking = (bookingItem) => { const customer = currentCustomer(); return Boolean(customer && (bookingItem.customerId === customer.id || bookingItem.bookedByCustomerId === customer.id)); };
 window.openBookingDetails = (id) => { const bookingItem = db.bookings.find((item) => item.id === id); if (!bookingItem || !customerOwnsBooking(bookingItem)) return; db.activeBookingId = id; db.route = 'booking-details'; render(); };
 function bookingDetails() { const bookingItem = db.bookings.find((item) => item.id === db.activeBookingId); if (!bookingItem || !customerOwnsBooking(bookingItem)) return `<h1>Booking details</h1>${card('<p>Booking not found.</p><button onclick="navigate(\'my-bookings\')">Back to my bookings</button>')}`; return `<div class="page-heading"><div><p class="eyebrow">Booking saved</p><h1>Booking details</h1><p>Your appointment request has been saved successfully.</p></div><button class="ghost" onclick="navigate('my-bookings')">All bookings</button></div>${customerBookingCard(bookingItem)}`; }
 function myBookings() { const mine = db.bookings.filter(customerOwnsBooking); return `<h1>My bookings</h1><h2>Upcoming appointments</h2>${mine.filter((b) => ['Pending', 'Confirmed'].includes(b.status)).map(customerBookingCard).join('') || card('No upcoming appointments.')}<h2>Previous appointments</h2>${mine.filter((b) => !['Pending', 'Confirmed'].includes(b.status)).map(customerBookingCard).join('') || card('No previous appointments yet.')}`; }
-  function customerBookingCard(b) { const s = db.salons.find((item) => item.id === b.salonId); const service = db.services.find((item) => item.id === b.serviceId); const customer = db.customers.find((item) => item.id === b.customerId); const message = `Hi ${customer?.name}, your booking at ${s.name} is ${b.status.toLowerCase()} for ${service.name} on ${b.date} at ${b.time}.`; const upcoming = ['Pending', 'Confirmed'].includes(b.status); const explanation = b.status === 'Pending' ? '<p class="booking-state-note">Waiting for the salon owner to confirm this request.</p>' : ''; return card(`<div class="booking-card-head"><div><h3>${service.name}</h3><p>${s.name} · ${b.date} at ${b.time}</p></div>${statusChip(b.status)}</div>${explanation}<p>${service.duration} min · ${fmt(b.amount)} · Pay at salon</p>${b.note ? `<p>Note: ${b.note}</p>` : ''}<div class="actions"><button class="ghost" onclick="openBookingDetails('${b.id}')">View details</button>${upcoming ? `<button class="danger" onclick="cancelBooking('${b.id}')">Cancel</button><button class="ghost" onclick="rescheduleBooking('${b.id}')">Reschedule</button><a target="_blank" href="${wa(s.whatsapp, message)}">WhatsApp</a>` : b.status === 'Completed' ? `<button onclick="rebook('${b.id}')">Rebook</button>` : ''}</div>`, 'booking-card'); }
+  function customerBookingCard(b) { const s = db.salons.find((item) => item.id === b.salonId); const service = db.services.find((item) => item.id === b.serviceId); const customer = db.customers.find((item) => item.id === b.customerId); const salonName = s?.name || 'Salon unavailable'; const serviceName = service?.name || 'Service unavailable'; const message = `Hi ${customer?.name || 'there'}, your booking at ${salonName} is ${b.status.toLowerCase()} for ${serviceName} on ${b.date} at ${b.time}.`; const upcoming = ['Pending', 'Confirmed'].includes(b.status); const explanation = b.status === 'Pending' ? '<p class="booking-state-note">Waiting for the salon owner to confirm this request.</p>' : ''; return card(`<div class="booking-card-head"><div><h3>${serviceName}</h3><p>${salonName} · ${b.date} at ${b.time}</p></div>${statusChip(b.status)}</div>${explanation}<p>${service?.duration ? `${service.duration} min · ` : ''}${fmt(b.amount)} · Pay at salon</p>${b.note ? `<p>Note: ${b.note}</p>` : ''}<div class="actions"><button class="ghost" onclick="openBookingDetails('${b.id}')">View details</button>${upcoming ? `<button class="danger" onclick="cancelBooking('${b.id}')">Cancel</button><button class="ghost" onclick="rescheduleBooking('${b.id}')">Reschedule</button>${s?.whatsapp ? `<a target="_blank" href="${wa(s.whatsapp, message)}">WhatsApp</a>` : ''}` : b.status === 'Completed' && service ? `<button onclick="rebook('${b.id}')">Rebook</button>` : ''}</div>`, 'booking-card'); }
 window.rebook = (id) => { const bookingItem = db.bookings.find((item) => item.id === id); db.activeSalonId = bookingItem.salonId; startBooking(bookingItem.serviceId); };
 function beforeCutoff(b) { return new Date(`${b.date}T${b.time}:00+05:30`).getTime() - Date.now() >= cancellationCutoff(b.salonId) * 3600000; }
 window.cancelBooking = (id) => { const booking = db.bookings.find((b) => b.id === id); if (!beforeCutoff(booking)) return alert(`Cancellation closes ${cancellationCutoff(booking.salonId)} hours before the appointment.`); booking.status = 'Cancelled'; save(); render(); };
