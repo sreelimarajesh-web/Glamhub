@@ -47,3 +47,13 @@ test('booking persistence retries a revision conflict and owner dashboard lists 
   assert.ok(source.includes('<h2>Booking requests</h2>'));
   assert.ok(source.includes("b.status === 'Pending' && b.date >= today"));
 });
+
+test('a saved customer booking opens its details page', async () => {
+  const source = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
+  const submission = source.slice(source.indexOf('async function submitBookingRequest'), source.indexOf('function myBookings()'));
+
+  assert.ok(submission.includes('db.activeBookingId = booking.id'));
+  assert.ok(submission.includes("db.route = pending.walkIn ? 'owner-bookings' : 'booking-details'"));
+  assert.ok(source.includes("'booking-details': bookingDetails"));
+  assert.ok(source.includes('Your appointment request has been saved successfully.'));
+});
