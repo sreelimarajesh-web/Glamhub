@@ -13,3 +13,12 @@ test('user credentials are hashed and sessions use HTTP-only cookies', () => {
   const tampered = cookie.replace(`${token.slice(0, -1)}${token.at(-1)}`, `${token.slice(0, -1)}${token.at(-1) === 'x' ? 'y' : 'x'}`);
   assert.equal(readUserSession(tampered), null);
 });
+
+test('session records the role selected for login', () => {
+  const account = { _id: 'account-2', email: 'both@example.com', name: 'Both Roles', roles: ['customer', 'salon_owner'] };
+  const customerSession = readUserSession(userCookie(createUserToken(account, 'customer'), false));
+  const ownerSession = readUserSession(userCookie(createUserToken(account, 'salon_owner'), false));
+
+  assert.equal(customerSession.activeRole, 'customer');
+  assert.equal(ownerSession.activeRole, 'salon_owner');
+});
