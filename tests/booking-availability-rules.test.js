@@ -26,8 +26,7 @@ test('salon booking rules are persisted and exposed to customers', async () => {
   }
 });
 
-test('legacy booking API also rejects appointments inside the two-hour lead time', async () => {
-  const source = await readFile(new URL('../api/bookings.js', import.meta.url), 'utf8');
-  assert.ok(source.includes('isAfterMinimumLeadTime(date, time)'));
-  assert.ok(source.includes('at least 2 hours in advance'));
+test('obsolete booking API is not deployable', async () => {
+  const { access } = await import('node:fs/promises');
+  await assert.rejects(access(new URL('../api/bookings.js', import.meta.url)));
 });
