@@ -174,6 +174,50 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .booking-choice .service-price.compact .offer-price-pair { justify-content: flex-end; }
 .booking-choice .service-offer-badge { justify-self: end; }
 
+/* Salon owner offer builder */
+.offer-creator-page { margin: 0 auto; max-width: 1040px; }
+.offer-page-heading { margin: 4px 0 24px; }
+.offer-page-heading h1 { letter-spacing: -.035em; }
+.offer-page-heading p:last-child { color: var(--muted); margin: 0; }
+.offer-builder { align-items: start; display: grid; gap: 22px; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr); }
+.offer-form-card, .offer-preview-card { background: white; border: 1px solid #e7ebf1; border-radius: 18px; box-shadow: 0 8px 28px rgba(15,23,42,.055); }
+.offer-form-card { padding: 26px; }
+.offer-step { align-items: flex-start; display: flex; gap: 12px; margin: 4px 0 15px; }
+.offer-step:not(:first-child) { border-top: 1px solid #edf0f4; margin-top: 22px; padding-top: 22px; }
+.offer-step > span { align-items: center; background: var(--primary-soft); border-radius: 50%; color: var(--primary); display: flex; flex: 0 0 auto; font-size: .78rem; font-weight: 800; height: 28px; justify-content: center; width: 28px; }
+.offer-step h2 { font-size: 1.05rem; margin: 2px 0 3px; }
+.offer-step p { color: var(--muted); font-size: .78rem; margin: 0; }
+.audience-picker { display: grid; gap: 8px; grid-template-columns: repeat(5, 1fr); }
+.audience-option { align-items: flex-start; background: #fff; border: 1px solid #d9e0e9; color: var(--text); display: flex; flex-direction: column; min-height: 92px; padding: 11px; position: relative; text-align: left; }
+.audience-option:hover, .audience-option.selected { background: var(--primary-soft); border-color: var(--primary); color: var(--text); }
+.audience-option.selected { box-shadow: 0 0 0 1px var(--primary); }
+.audience-option small { color: var(--muted); font-size: .65rem; font-weight: 500; margin-top: 3px; }
+.audience-option strong { color: var(--primary); font-size: .7rem; margin-top: auto; }
+.offer-deal-grid { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+.discount-input { display: grid; grid-template-columns: 1fr 90px; }
+.discount-input input { border-radius: 9px 0 0 9px; }
+.discount-input select { background: #f8fafc; border-left: 0; border-radius: 0 9px 9px 0; }
+.offer-form-card label > small { color: var(--muted); font-weight: 400; }
+.offer-end-field { max-width: calc(50% - 7px); }
+.offer-advanced { border-bottom: 1px solid #edf0f4; border-top: 1px solid #edf0f4; margin: 10px 0 20px; }
+.offer-advanced summary { align-items: center; cursor: pointer; display: flex; font-size: .84rem; font-weight: 700; justify-content: space-between; list-style: none; padding: 13px 2px; }
+.offer-advanced summary::-webkit-details-marker { display: none; }
+.offer-advanced[open] summary span { transform: rotate(45deg); }
+.offer-submit { justify-content: space-between; width: 100%; }
+.offer-review-note { color: var(--muted); font-size: .7rem; margin: 9px 0 0; text-align: center; }
+.offer-preview-card { padding: 22px; position: sticky; top: 88px; }
+.offer-preview-card > .eyebrow { margin-bottom: 14px; }
+.offer-preview-ticket { background: linear-gradient(145deg,#172b6a,#1e56e3); border-radius: 16px; color: white; min-height: 230px; overflow: hidden; padding: 24px; position: relative; }
+.offer-preview-ticket::after { border: 1px solid rgba(255,255,255,.18); border-radius: 50%; content: ''; height: 150px; position: absolute; right: -64px; top: -56px; width: 150px; }
+.offer-preview-saving { color: #bfdbfe; font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+.offer-preview-ticket h2 { font-size: 1.45rem; margin: 16px 0 7px; overflow-wrap: anywhere; }
+.offer-preview-ticket > p { color: #dbeafe; font-size: .82rem; margin: 0; min-height: 54px; }
+.offer-preview-ticket > div { border-top: 1px solid rgba(255,255,255,.22); display: flex; font-size: .7rem; gap: 10px; justify-content: space-between; margin-top: 18px; padding-top: 13px; }
+.offer-reach { align-items: center; background: #f8fafc; border-radius: 10px; color: var(--muted); display: flex; font-size: .75rem; gap: 8px; margin: 14px 0 0; padding: 11px; }
+.offer-reach > span { color: var(--primary); font-size: 1rem; }
+.offer-reach b { color: var(--text); }
+.offer-list-heading { border-top: 1px solid #e6eaf0; margin-top: 34px; padding-top: 28px; }
+
 /* Customer booking history */
 .my-bookings-page { margin: 0 auto; max-width: 880px; }
 .bookings-page-heading { margin-bottom: 24px; }
@@ -429,6 +473,13 @@ footer { display: none; }
   .discovery-photo { aspect-ratio: 16 / 10; }
   .search-heading { align-items: stretch; grid-template-columns: 1fr; }
   .two, .three, .six, .form-grid { grid-template-columns: 1fr; }
+  .offer-builder { grid-template-columns: 1fr; }
+  .offer-preview-card { position: static; }
+  .audience-picker { grid-template-columns: repeat(2, 1fr); }
+  .audience-option { min-height: 82px; }
+  .offer-deal-grid { grid-template-columns: 1fr; }
+  .offer-end-field { max-width: none; }
+  .offer-form-card, .offer-preview-card { padding: 18px; }
   .editor-row { align-items: stretch; grid-template-columns: 1fr 1fr; }
   .editor-row label:first-child { grid-column: 1 / -1; }
   .home-offer, .page-heading, .section-heading { align-items: stretch; flex-direction: column; }
