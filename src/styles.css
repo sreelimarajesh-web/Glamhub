@@ -260,6 +260,38 @@ input:focus, select:focus, textarea:focus { border-color: var(--primary); box-sh
 .booking-editor { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 12px; }
 .booking-editor summary { color: var(--primary-dark); cursor: pointer; font-weight: 700; }
 .booking-editor[open] summary { margin-bottom: 12px; }
+
+/* Owner booking schedule */
+.owner-bookings-page { margin: 0 auto; max-width: 880px; }
+.owner-bookings-heading { align-items: flex-end; display: flex; gap: 24px; justify-content: space-between; margin-bottom: 24px; }
+.owner-bookings-heading h1 { font-size: clamp(1.8rem, 4vw, 2.35rem); letter-spacing: -.035em; margin: 5px 0 7px; }
+.owner-bookings-heading p:last-child { color: var(--muted); margin: 0; }
+.owner-bookings-heading > button { flex: 0 0 auto; gap: 6px; }
+.owner-bookings-list { display: grid; gap: 16px; }
+.owner-booking-card { background: white; border: 1px solid #e6eaf0; border-radius: 12px; box-shadow: 0 5px 20px rgba(15,23,42,.045); overflow: hidden; padding: 21px; }
+.owner-booking-card.booking-request { border-left: 4px solid var(--primary); }
+.owner-booking-head { align-items: flex-start; display: flex; gap: 18px; justify-content: space-between; }
+.owner-customer { align-items: center; display: flex; gap: 12px; min-width: 0; }
+.owner-customer-avatar { align-items: center; background: var(--primary-soft); border-radius: 10px; color: var(--primary-dark); display: flex; flex: 0 0 auto; font-size: .82rem; font-weight: 700; height: 42px; justify-content: center; width: 42px; }
+.owner-customer small { color: #7a8494; display: block; font-size: .7rem; font-weight: 600; letter-spacing: .02em; margin-bottom: 3px; text-transform: uppercase; }
+.owner-customer h2 { font-size: 1.08rem; margin: 0 0 3px; }
+.owner-customer p { color: var(--muted); font-size: .8rem; margin: 0; }
+.owner-booking-info { grid-template-columns: 1fr minmax(220px, .75fr); }
+.owner-booking-meta { align-items: center; color: var(--muted); display: flex; flex-wrap: wrap; font-size: .8rem; gap: 7px; margin: 14px 0 0 54px; }
+.owner-booking-meta strong { color: #344054; font-weight: 600; }
+.owner-booking-meta i { background: #cbd5e1; border-radius: 50%; height: 3px; margin: 0 3px; width: 3px; }
+.owner-booking-note { background: #f8fafc; border-radius: 9px; margin-top: 15px; padding: 10px 12px; }
+.owner-booking-note strong { color: #344054; font-size: .75rem; }
+.owner-booking-note p { color: var(--muted); font-size: .8rem; margin: 3px 0 0; }
+.owner-booking-actions { align-items: center; border-top: 1px solid #edf0f4; display: flex; gap: 9px; margin-top: 18px; padding-top: 16px; }
+.owner-booking-actions button, .owner-booking-actions a { font-size: .8rem; min-height: 38px; padding: 8px 13px; }
+.owner-booking-actions .owner-action-secondary { background: white; border: 1px solid #cfd6e1; color: #344054; }
+.owner-booking-actions .owner-action-secondary:hover { background: #f8fafc; border-color: #9ba8ba; }
+.owner-booking-actions .owner-contact { background: transparent; color: var(--primary); margin-left: auto; padding-right: 0; }
+.owner-booking-editor { margin-top: 14px; }
+.owner-booking-editor summary { align-items: center; display: flex; font-size: .8rem; justify-content: space-between; list-style: none; }
+.owner-booking-editor summary::-webkit-details-marker { display: none; }
+.owner-booking-editor[open] summary span:last-child { transform: rotate(180deg); }
 .profile-hero { align-items: center; background: white; border: 1px solid #f1f5f9; border-radius: 20px; box-shadow: 0 2px 8px rgba(15,23,42,.05); display: flex; gap: 20px; padding: 24px; }
 .profile-avatar { align-items: center; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 6px var(--primary-soft); color: white; display: flex; font-size: 1.35rem; font-weight: 700; height: 72px; justify-content: center; min-width: 72px; }
 .profile-identity h1 { font-size: clamp(1.6rem, 4vw, 2rem); margin: 2px 0 5px; }
@@ -496,6 +528,22 @@ footer { display: none; }
 
 @media (max-width: 800px) {
   main:has(.my-bookings-page) { padding: 22px 14px 104px; }
+  main:has(.owner-bookings-page) { padding: 22px 14px 104px; }
+  .owner-bookings-heading { align-items: stretch; flex-direction: column; gap: 16px; margin-bottom: 19px; }
+  .owner-bookings-heading .eyebrow { display: none; }
+  .owner-bookings-heading h1 { font-size: 1.65rem; }
+  .owner-bookings-heading p:last-child { font-size: .84rem; }
+  .owner-bookings-heading > button { width: 100%; }
+  .owner-booking-tabs button { flex: 1; }
+  .owner-booking-card { padding: 17px 15px; }
+  .owner-booking-info { gap: 14px; grid-template-columns: 1fr; margin-top: 15px; padding-top: 15px; }
+  .owner-booking-info .booking-schedule { grid-template-columns: 1fr auto; }
+  .owner-booking-info .booking-schedule small { grid-column: 1 / -1; }
+  .owner-booking-info .booking-schedule span { margin: 0; }
+  .owner-booking-meta { margin-left: 0; }
+  .owner-booking-actions { flex-wrap: wrap; }
+  .owner-booking-actions button { flex: 1 1 130px; }
+  .owner-booking-actions .owner-contact { flex: 0 0 auto; }
   .bookings-page-heading { margin-bottom: 19px; }
   .bookings-page-heading .eyebrow { display: none; }
   .bookings-page-heading h1 { font-size: 1.65rem; }
@@ -522,4 +570,7 @@ footer { display: none; }
   .booking-salon-row { display: grid; }
   .booking-status { justify-self: start; }
   .booking-actions .booking-contact { margin-left: 0; }
+  .owner-booking-head { display: grid; }
+  .owner-booking-head .booking-status { justify-self: start; }
+  .owner-booking-actions .owner-contact { margin-left: 0; }
 }
