@@ -28,14 +28,14 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 - The public app supports two entry points: contextual authentication from **Book Now**, which preserves and resumes the booking draft, and a universal header login for Customer or Salon Owner access. The complete state machine and modal contract are documented in [`docs/AUTH_INTERACTION.md`](docs/AUTH_INTERACTION.md).
 - Sign-in and Google signup render Google Identity Services directly inside the SPA authentication card, so one click opens Google without an intermediate Zaya login page.
-- The checked-in Google web client ID is a browser-safe application identifier and is also used by the server verifier by default. Set `GOOGLE_OAUTH_CLIENT_ID` to override it in both the Express runtime and authentication API.
+- Google authentication is disabled unless its server and browser client identifier is explicitly configured.
 - New users can open a dedicated Create account form; salon owners also provide their salon name and location.
 - Manual email/password sign-in is available alongside Google, including a password-recovery affordance.
 - One normalized email maps to one identity account, while `identity_roles` allows that account to hold Customer and Salon Owner roles without duplicate users.
 
 ### Vercel admin authentication
 
-`vercel.json` maps `/admin/login` and `/admin/dashboard` to their static page shells, while the matching serverless functions under `api/admin/` provide login, session validation, and logout. The default login is username `admin` with password `infy@123`. A deployment can override these with `ADMIN_USERNAME` and `ADMIN_PASSWORD` (the legacy `ADMIN_EMAIL` variable is also accepted as the username).
+`vercel.json` maps `/admin/login` and `/admin/dashboard` to their static page shells, while the matching serverless functions under `api/admin/` provide login, session validation, and logout. Administrator authentication requires explicit, strong `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and independent `SESSION_SECRET` values.
 - `/admin/login` is the public admin entry. The dashboard shell validates the signed, HTTP-only ADMIN session cookie through `/api/admin/session`, and protected admin data must remain behind server-side session checks.
 - Browser email auth remains a local demo path. Production should connect both paths to Supabase Auth, validate roles server-side, and never persist raw passwords in application tables.
 
@@ -52,7 +52,7 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 - WhatsApp uses click-to-chat links in `src/app.js`; campaigns are tracked in-app first so the future WhatsApp Business API adapter can be added without changing the owner workflow.
 - Online payment is intentionally not implemented; V1 uses pay at salon.
 - Supabase Google provider settings and OAuth redirect URLs must be configured for production authentication.
-- Override `ADMIN_USERNAME` and `ADMIN_PASSWORD` in production to replace the built-in admin credentials.
+- Configure all authentication credentials explicitly; there are no built-in administrator credentials.
 
 ## Admin platform
 
@@ -71,3 +71,11 @@ MongoDB is the source of truth for customer, salon-owner, and administrator data
 The application APIs require this endpoint to report `connected`; the public discovery shell can still render while a transient database outage is resolved.
 
 When using the Vercel MongoDB integration, redeploy after connecting the integration so its injected `MONGODB_URI` is available to the serverless function. The endpoint disables HTTP caching and reports `latencyMs`, so each request verifies the current deployment rather than returning an old CDN response. To verify from a development shell that has the same environment variable, run `npm run test:mongodb`; it performs both a ping and MongoDB `buildInfo` command, prints only non-secret connection metadata, then closes the process connection.
+
+## Production security and deployment
+
+Production fails closed unless `MONGODB_URI`, `PUBLIC_APP_URL`, `SESSION_SECRET`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `RATE_LIMIT_STORE_URL`, and `RATE_LIMIT_STORE_TOKEN` are present. Set `GOOGLE_OAUTH_CLIENT_ID` when `GOOGLE_AUTH_ENABLED=true`. Generate independent secrets with `openssl rand -base64 48`; never reuse the administrator password as the session secret. Configure separate values in Vercel Production, Preview, and Development, and use an explicit local `.env` for development. No application default credentials exist.
+
+Create a MongoDB user restricted to the application database with only required read/write/index privileges; do not use an Atlas owner. Enable continuous backups for the pilot, test a restore into an isolated project before launch, and record the recovery-point objective. Deploy indexes/migrations first, application Preview second, run `SMOKE_BASE_URL=https://preview.example npm run smoke`, then promote. The smoke script accepts optional `SMOKE_ADMIN_USERNAME` and `SMOKE_ADMIN_PASSWORD`; never commit them. Complete customer registration/login/session/logout, owner registration/onboarding, public catalog, and two-account cross-tenant rejection checks using isolated test accounts.
+
+For rollback, stop traffic, restore the prior immutable deployment, and restore the database only if the release changed data incompatibly. After any suspected disclosure, rotate the database credential, rate-store token, administrator password, and finally `SESSION_SECRET` (which invalidates sessions), redeploy, and rerun smoke checks. Missing secrets intentionally make authentication unavailable rather than selecting fallback values. See [`docs/SECURITY_MIGRATION.md`](docs/SECURITY_MIGRATION.md) for the incompatible endpoint removal.

@@ -15,12 +15,14 @@ async function javascriptFiles(directory) {
 
 test('Vercel deployment stays below the twelve-function limit', async () => {
   const functions = await javascriptFiles(fileURLToPath(new URL('../api', import.meta.url)));
-  assert.equal(functions.length, 9);
+  assert.equal(functions.length, 6);
+  for (const file of functions) { const module = await import(file); assert.equal(typeof module.default, 'function', `${file} must default-export a handler`); }
   assert.ok(functions.length < 12);
 });
 
 test('consolidated authentication function rejects unknown actions', async () => {
   const response = {
+    headers: {}, setHeader(name, value) { this.headers[name] = value; }, removeHeader() {},
     statusCode: 200,
     status(code) { this.statusCode = code; return this; },
     json(body) { this.body = body; return this; },

@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import googleHandler from '../lib/auth-handlers/google.js';
-import { DEFAULT_GOOGLE_OAUTH_CLIENT_ID, googleOAuthClientId } from '../lib/google-oauth.js';
+import { googleOAuthClientId } from '../lib/google-oauth.js';
 
-test('Google OAuth uses the deployed browser client when no environment override exists', () => {
+test('Google OAuth fails closed when no client is configured', () => {
   const previous = process.env.GOOGLE_OAUTH_CLIENT_ID;
   delete process.env.GOOGLE_OAUTH_CLIENT_ID;
   try {
-    assert.equal(googleOAuthClientId(), DEFAULT_GOOGLE_OAUTH_CLIENT_ID);
+    assert.equal(googleOAuthClientId(), '');
   } finally {
     if (previous === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
     else process.env.GOOGLE_OAUTH_CLIENT_ID = previous;

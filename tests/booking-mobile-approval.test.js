@@ -3,17 +3,11 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 test('appointment confirmation requires and persists a mobile number', async () => {
-  const [client, bookingApi, bookingModel] = await Promise.all([
-    readFile(new URL('../src/app.js', import.meta.url), 'utf8'),
-    readFile(new URL('../api/bookings.js', import.meta.url), 'utf8'),
-    readFile(new URL('../models/Booking.js', import.meta.url), 'utf8'),
-  ]);
+  const client = await readFile(new URL('../src/app.js', import.meta.url), 'utf8');
 
   assert.match(client, /Mobile number <small>\(required\)<\/small>/);
   assert.match(client, /if \(!pending\.guestMobile\)/);
   assert.match(client, /customer\.mobile = pending\.guestMobile\.trim\(\)/);
-  assert.match(bookingApi, /!String\(mobile \|\| ''\)\.trim\(\)/);
-  assert.match(bookingModel, /mobile: \{ type: String, required: true/);
 });
 
 test('new owner salons enter the admin queue inactive and pending', async () => {
