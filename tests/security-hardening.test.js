@@ -15,3 +15,15 @@ test('security headers, csrf origins, and rate limit are enforced', async () => 
   const old=process.env.PUBLIC_APP_URL; process.env.PUBLIC_APP_URL='https://zaya.example'; res=response(); let next=false; csrfProtection({method:'POST',headers:{origin:'https://evil.example'}},res,()=>{next=true;}); assert.equal(res.statusCode,403); assert.equal(next,false); res=response(); csrfProtection({method:'POST',headers:{origin:'https://zaya.example'}},res,()=>{next=true;}); assert.equal(next,true); process.env.PUBLIC_APP_URL=old;
   resetRateLimits(); const limiter=rateLimit({name:'test',limit:2,windowMs:10000}); const req={socket:{remoteAddress:'127.0.0.1'}}; await limiter(req,response(),()=>{}); await limiter(req,response(),()=>{}); res=response(); await limiter(req,res,()=>{}); assert.equal(res.statusCode,429); assert.ok(res.headers['Retry-After']);
 });
+test('csrf protection derives the deployment origin when PUBLIC_APP_URL is omitted', () => {
+  const oldNodeEnv=process.env.NODE_ENV; const oldPublicUrl=process.env.PUBLIC_APP_URL;
+  try {
+    process.env.NODE_ENV='production'; delete process.env.PUBLIC_APP_URL;
+    let res=response(); let next=false;
+    csrfProtection({method:'POST',headers:{origin:'https://preview.example','x-forwarded-host':'preview.example','x-forwarded-proto':'https'}},res,()=>{next=true;});
+    assert.equal(next,true); assert.equal(res.statusCode,200);
+    res=response(); next=false;
+    csrfProtection({method:'POST',headers:{origin:'https://evil.example','x-forwarded-host':'preview.example','x-forwarded-proto':'https'}},res,()=>{next=true;});
+    assert.equal(next,false); assert.equal(res.statusCode,403);
+  } finally { if (oldNodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV=oldNodeEnv; if (oldPublicUrl === undefined) delete process.env.PUBLIC_APP_URL; else process.env.PUBLIC_APP_URL=oldPublicUrl; }
+});
