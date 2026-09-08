@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { adminConfig, ConfigurationError, sessionSecret, validateProductionConfig } from '../lib/config.js';
+import { adminConfig, ConfigurationError, rateLimitStoreConfig, sessionSecret, validateProductionConfig } from '../lib/config.js';
 import { createUserToken, readUserSession, userCookie } from '../lib/user-session.js';
 import { csrfProtection, rateLimit, resetRateLimits, securityHeaders } from '../lib/security.js';
 const response = () => ({ statusCode: 200, headers: {}, setHeader(k,v){this.headers[k]=v;}, removeHeader(){}, status(c){this.statusCode=c;return this;}, json(v){this.body=v;return this;} });
@@ -26,4 +26,15 @@ test('csrf protection derives the deployment origin when PUBLIC_APP_URL is omitt
     csrfProtection({method:'POST',headers:{origin:'https://evil.example','x-forwarded-host':'preview.example','x-forwarded-proto':'https'}},res,()=>{next=true;});
     assert.equal(next,false); assert.equal(res.statusCode,403);
   } finally { if (oldNodeEnv === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV=oldNodeEnv; if (oldPublicUrl === undefined) delete process.env.PUBLIC_APP_URL; else process.env.PUBLIC_APP_URL=oldPublicUrl; }
+});
+test('rate limit store recognizes Vercel KV and Upstash integration variables', () => {
+  const old={...process.env};
+  try {
+    delete process.env.RATE_LIMIT_STORE_URL; delete process.env.RATE_LIMIT_STORE_TOKEN;
+    process.env.KV_REST_API_URL='https://kv.example'; process.env.KV_REST_API_TOKEN='kv-token';
+    assert.deepEqual(rateLimitStoreConfig(), { url: 'https://kv.example', token: 'kv-token' });
+    delete process.env.KV_REST_API_URL; delete process.env.KV_REST_API_TOKEN;
+    process.env.UPSTASH_REDIS_REST_URL='https://upstash.example'; process.env.UPSTASH_REDIS_REST_TOKEN='upstash-token';
+    assert.deepEqual(rateLimitStoreConfig(), { url: 'https://upstash.example', token: 'upstash-token' });
+  } finally { process.env=old; }
 });
