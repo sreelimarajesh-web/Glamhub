@@ -5,7 +5,7 @@
   "description": "Zaya salon management SaaS MVP for Palakkad, Kerala",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "start": "node --env-file-if-exists=.env server.js",
     "check": "find api lib models scripts src js -name '*.js' -print0 | xargs -0 -n1 node --check",
     "test": "SESSION_SECRET=test-session-secret-abcdefghijklmnopqrstuvwxyz ADMIN_USERNAME=test-admin ADMIN_PASSWORD=test-admin-password-abcdefghijklmnopqrstuvwxyz node --test tests/*.test.js",
     "test:mongodb": "node scripts/verify-mongodb.js",
