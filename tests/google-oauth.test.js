@@ -1,27 +1,51 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import googleHandler from '../lib/auth-handlers/google.js';
-import { googleOAuthClientId } from '../lib/google-oauth.js';
+import { googleAuthEnabled, googleOAuthClientId } from '../lib/google-oauth.js';
 
 test('Google OAuth fails closed when no client is configured', () => {
   const previous = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
   delete process.env.GOOGLE_OAUTH_CLIENT_ID;
+  process.env.GOOGLE_AUTH_ENABLED = 'true';
   try {
     assert.equal(googleOAuthClientId(), '');
   } finally {
     if (previous === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
     else process.env.GOOGLE_OAUTH_CLIENT_ID = previous;
+    if (previousEnabled === undefined) delete process.env.GOOGLE_AUTH_ENABLED;
+    else process.env.GOOGLE_AUTH_ENABLED = previousEnabled;
   }
 });
 
 test('Google OAuth prefers a configured client ID', () => {
   const previous = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
+  process.env.GOOGLE_AUTH_ENABLED = 'true';
   process.env.GOOGLE_OAUTH_CLIENT_ID = 'configured-client.apps.googleusercontent.com';
   try {
     assert.equal(googleOAuthClientId(), 'configured-client.apps.googleusercontent.com');
   } finally {
     if (previous === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
     else process.env.GOOGLE_OAUTH_CLIENT_ID = previous;
+    if (previousEnabled === undefined) delete process.env.GOOGLE_AUTH_ENABLED;
+    else process.env.GOOGLE_AUTH_ENABLED = previousEnabled;
+  }
+});
+
+test('Google OAuth stays disabled unless the feature flag is true', () => {
+  const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
+  const previousClientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  process.env.GOOGLE_AUTH_ENABLED = 'false';
+  process.env.GOOGLE_OAUTH_CLIENT_ID = 'configured-client.apps.googleusercontent.com';
+  try {
+    assert.equal(googleAuthEnabled(), false);
+    assert.equal(googleOAuthClientId(), '');
+  } finally {
+    if (previousEnabled === undefined) delete process.env.GOOGLE_AUTH_ENABLED;
+    else process.env.GOOGLE_AUTH_ENABLED = previousEnabled;
+    if (previousClientId === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
+    else process.env.GOOGLE_OAUTH_CLIENT_ID = previousClientId;
   }
 });
 
