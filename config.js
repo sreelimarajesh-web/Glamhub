@@ -1,6 +1,8 @@
-// Browser-safe fallback for static hosting. Keep these values aligned with
-// GOOGLE_AUTH_ENABLED and GOOGLE_OAUTH_CLIENT_ID in the deployment environment.
+// A safe loading state for static hosting. The app fetches browser-safe runtime
+// configuration from /api/auth/config, so Vercel environment variables are the
+// single source of truth. Static hosts without that endpoint keep Google off.
 window.SALONMATE_CONFIG = {
-    googleAuthEnabled: true,
-    googleOAuthClientId: '72416329561-c4enbj103esjlb1v7h5fbg6eb0vgi1oc.apps.googleusercontent.com'
+    googleAuthLoading: true,
+    googleAuthEnabled: false,
+    googleOAuthClientId: ''
 };

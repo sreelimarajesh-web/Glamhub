@@ -4,9 +4,15 @@ import logout from '../lib/auth-handlers/logout.js';
 import register from '../lib/auth-handlers/register.js';
 import session from '../lib/auth-handlers/session.js';
 import salon from '../lib/auth-handlers/salon.js';
+import { publicAppConfig } from '../lib/public-config.js';
 import { csrfProtection, rateLimit, requestId, runAsyncMiddleware, runMiddleware, securityHeaders } from '../lib/security.js';
 
-const handlers = { google, login, logout, register, session, salon };
+const config = (req, res) => {
+  if (req.method && req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed.' });
+  res.setHeader?.('Cache-Control', 'no-store, max-age=0');
+  return res.status(200).json(publicAppConfig());
+};
+const handlers = { config, google, login, logout, register, session, salon };
 
 const limits = {
   login: rateLimit({ name: 'login', limit: 10, windowMs: 15 * 60_000 }),
