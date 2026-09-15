@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import googleHandler from '../lib/auth-handlers/google.js';
+import authHandler from '../api/auth.js';
 import { googleAuthEnabled, googleOAuthClientId } from '../lib/google-oauth.js';
 
 test('Google OAuth fails closed when no client is configured', () => {
@@ -60,4 +61,41 @@ test('Google authentication reports a missing credential as a bad request', asyn
 
   assert.equal(response.statusCode, 400);
   assert.equal(response.body.error, 'Google credential is required.');
+});
+
+test('public configuration exposes the enabled Google client at runtime', async () => {
+  const previous = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
+  process.env.GOOGLE_AUTH_ENABLED = 'true';
+  process.env.GOOGLE_OAUTH_CLIENT_ID = 'runtime-client.apps.googleusercontent.com';
+  const response = {
+    headers: {},
+    statusCode: 0,
+    setHeader(name, value) { this.headers[name] = value; },
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; },
+  };
+  try {
+    await authHandler({ method: 'GET', query: { action: 'config' } }, response);
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.headers['Cache-Control'], 'no-store, max-age=0');
+    assert.deepEqual(response.body, { googleAuthEnabled: true, googleOAuthClientId: 'runtime-client.apps.googleusercontent.com' });
+  } finally {
+    if (previous === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
+    else process.env.GOOGLE_OAUTH_CLIENT_ID = previous;
+    if (previousEnabled === undefined) delete process.env.GOOGLE_AUTH_ENABLED;
+    else process.env.GOOGLE_AUTH_ENABLED = previousEnabled;
+  }
+});
+
+test('public configuration rejects non-GET requests', async () => {
+  const response = {
+    setHeader() {},
+    statusCode: 0,
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; },
+  };
+  await authHandler({ method: 'POST', query: { action: 'config' } }, response);
+  assert.equal(response.statusCode, 405);
+  assert.equal(response.body.error, 'Method not allowed.');
 });

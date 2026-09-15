@@ -35,7 +35,7 @@ The current browser MVP uses a single `src/app.js` implementation so there is no
 
 ### Enable Google sign-in
 
-Copy `.env.example` to `.env`, configure the Google Cloud OAuth web client, and start the application. The local start command loads `.env` automatically. The authorized JavaScript origins must exactly match the origin shown in the browser (for example, `http://localhost:3000` locally), and the same client ID must be configured in the browser and API. Follow the complete Google Cloud, local, Vercel, verification, and troubleshooting checklist in [`docs/GOOGLE_SIGN_IN.md`](docs/GOOGLE_SIGN_IN.md).
+Copy `.env.example` to `.env`, configure the Google Cloud OAuth web client, and start the application. The local start command loads `.env` automatically. The authorized JavaScript origins must exactly match the origin shown in the browser (for example, `http://localhost:3000` locally). The browser reads the same client ID as the API from the runtime `/api/auth/config` endpoint. Follow the complete Google Cloud, local, Vercel, verification, and troubleshooting checklist in [`docs/GOOGLE_SIGN_IN.md`](docs/GOOGLE_SIGN_IN.md).
 
 ### Vercel admin authentication
 

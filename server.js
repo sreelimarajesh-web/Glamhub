@@ -5,7 +5,7 @@ import { adminCookie, adminCredentials, clearAdminCookie, createAdminToken, read
 import { mongodbHealth } from './lib/mongodb-connection.js';
 import authHandler from './api/auth.js';
 import stateHandler from './api/state.js';
-import { googleAuthEnabled, googleOAuthClientId } from './lib/google-oauth.js';
+import { publicAppConfig } from './lib/public-config.js';
 import { ConfigurationError, validateProductionConfig } from './lib/config.js';
 import { BODY_LIMIT, csrfProtection, logError, rateLimit, requestId, securityHeaders } from './lib/security.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,10 +25,7 @@ function requireAdmin(req, res, next) {
   next();
 }
 app.get('/config.js', (_req, res) => {
-  res.type('application/javascript').send(`window.SALONMATE_CONFIG = ${JSON.stringify({
-    googleAuthEnabled: googleAuthEnabled(),
-    googleOAuthClientId: googleOAuthClientId(),
-  })};`);
+  res.type('application/javascript').send(`window.SALONMATE_CONFIG = ${JSON.stringify(publicAppConfig())};`);
 });
 app.get('/login', (_req, res) => res.redirect('/'));
 app.get('/admin/login', (_req, res) => res.sendFile(path.join(__dirname, 'admin-login.html')));

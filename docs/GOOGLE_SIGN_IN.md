@@ -24,7 +24,7 @@ Create the ignored local environment file from the committed template:
 cp .env.example .env
 ```
 
-Set these values in `.env`:
+Set these values in `.env` (replace the client ID placeholder with the ID from Google Cloud):
 
 ```dotenv
 GOOGLE_AUTH_ENABLED=true
@@ -44,12 +44,12 @@ npm start
 
 Add `GOOGLE_AUTH_ENABLED=true` and `GOOGLE_OAUTH_CLIENT_ID=<your-web-client-id>` in **Project Settings → Environment Variables** for Production, Preview, and Development as appropriate. Redeploy after changing variables.
 
-The checked-in `config.js` currently supplies the browser-safe client ID on static Vercel deployments. Keep its `googleAuthEnabled` and `googleOAuthClientId` values aligned with the Vercel variables until browser configuration is moved to a runtime endpoint. A Google OAuth client ID is public configuration; never put a client secret, Gmail password, access token, or refresh token in `config.js`.
+The app reads its browser-safe Google settings from `/api/auth/config` at runtime, so the Vercel environment variables are the only deployment configuration to maintain. The checked-in `config.js` intentionally contains no client ID and leaves Google disabled on static hosts that do not expose `/api/auth/config`. A Google OAuth client ID is public configuration; never put a client secret, Gmail password, access token, or refresh token in any browser file.
 
 ## 4. Verify the setup
 
 1. Load the app and confirm the Google button is rendered rather than “Google Sign-In is not configured.”
-2. In browser developer tools, confirm `/config.js` contains `googleAuthEnabled: true` and the expected client ID.
+2. In browser developer tools, confirm `/api/auth/config` returns `googleAuthEnabled: true` and the expected client ID.
 3. Complete sign-in and confirm `POST /api/auth/google` returns `200` and sets the HTTP-only `zaya_session` cookie.
 4. Refresh the page and confirm the signed-in session is restored.
 5. Test both Customer and Salon Owner roles. The same normalized Google email can hold both roles.
