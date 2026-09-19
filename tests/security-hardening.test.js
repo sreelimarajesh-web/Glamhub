@@ -38,3 +38,25 @@ test('rate limit store recognizes Vercel KV and Upstash integration variables', 
     assert.deepEqual(rateLimitStoreConfig(), { url: 'https://upstash.example', token: 'upstash-token' });
   } finally { process.env=old; }
 });
+test('production authentication rate limits fall back locally when the shared store is unavailable', async () => {
+  const oldEnvironment = { ...process.env };
+  const oldFetch = globalThis.fetch;
+  try {
+    process.env.NODE_ENV = 'production';
+    delete process.env.RATE_LIMIT_STORE_URL; delete process.env.RATE_LIMIT_STORE_TOKEN;
+    delete process.env.KV_REST_API_URL; delete process.env.KV_REST_API_TOKEN;
+    delete process.env.UPSTASH_REDIS_REST_URL; delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    resetRateLimits();
+    const limiter = rateLimit({ name: 'production-test', limit: 1, windowMs: 10_000 });
+    let next = false;
+    const req = { socket: { remoteAddress: '127.0.0.1' } };
+    let res = response(); await limiter(req, res, () => { next = true; });
+    assert.equal(next, true); assert.equal(res.statusCode, 200);
+    res = response(); await limiter(req, res, () => {});
+    assert.equal(res.statusCode, 429);
+    process.env.RATE_LIMIT_STORE_URL = 'https://rate-limit.example'; process.env.RATE_LIMIT_STORE_TOKEN = 'token';
+    globalThis.fetch = async () => { throw new Error('unavailable'); };
+    resetRateLimits(); res = response(); await limiter(req, res, () => {});
+    assert.equal(res.statusCode, 200);
+  } finally { process.env = oldEnvironment; globalThis.fetch = oldFetch; resetRateLimits(); }
+});
