@@ -34,7 +34,23 @@ test('Google OAuth prefers a configured client ID', () => {
   }
 });
 
-test('Google OAuth stays disabled unless the feature flag is true', () => {
+test('Google OAuth is enabled by a configured client ID when the feature flag is omitted', () => {
+  const previous = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
+  delete process.env.GOOGLE_AUTH_ENABLED;
+  process.env.GOOGLE_OAUTH_CLIENT_ID = 'configured-client.apps.googleusercontent.com';
+  try {
+    assert.equal(googleAuthEnabled(), true);
+    assert.equal(googleOAuthClientId(), 'configured-client.apps.googleusercontent.com');
+  } finally {
+    if (previous === undefined) delete process.env.GOOGLE_OAUTH_CLIENT_ID;
+    else process.env.GOOGLE_OAUTH_CLIENT_ID = previous;
+    if (previousEnabled === undefined) delete process.env.GOOGLE_AUTH_ENABLED;
+    else process.env.GOOGLE_AUTH_ENABLED = previousEnabled;
+  }
+});
+
+test('Google OAuth can be explicitly disabled with the feature flag', () => {
   const previousEnabled = process.env.GOOGLE_AUTH_ENABLED;
   const previousClientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
   process.env.GOOGLE_AUTH_ENABLED = 'false';

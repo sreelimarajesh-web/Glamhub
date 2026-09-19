@@ -27,9 +27,12 @@ cp .env.example .env
 Set these values in `.env` (replace the client ID placeholder with the ID from Google Cloud):
 
 ```dotenv
-GOOGLE_AUTH_ENABLED=true
 GOOGLE_OAUTH_CLIENT_ID=<your-web-client-id>.apps.googleusercontent.com
 ```
+
+The client ID enables Google sign-in automatically. `GOOGLE_AUTH_ENABLED` is an
+optional kill switch; set it to `false` only when you need to disable a configured
+client temporarily.
 
 Complete the other required variables in the template, then run:
 
@@ -42,7 +45,7 @@ npm start
 
 ## 3. Configure Vercel
 
-Add `GOOGLE_AUTH_ENABLED=true` and `GOOGLE_OAUTH_CLIENT_ID=<your-web-client-id>` in **Project Settings → Environment Variables** for Production, Preview, and Development as appropriate. Redeploy after changing variables.
+Add `GOOGLE_OAUTH_CLIENT_ID=<your-web-client-id>` in **Project Settings → Environment Variables** for Production, Preview, and Development as appropriate. Redeploy after changing variables. If `GOOGLE_AUTH_ENABLED` already exists with the value `false`, remove it or change it to `true`.
 
 The app reads its browser-safe Google settings from `/api/auth/config` at runtime, so the Vercel environment variables are the only deployment configuration to maintain. The checked-in `config.js` intentionally contains no client ID and leaves Google disabled on static hosts that do not expose `/api/auth/config`. A Google OAuth client ID is public configuration; never put a client secret, Gmail password, access token, or refresh token in any browser file.
 
@@ -56,7 +59,7 @@ The app reads its browser-safe Google settings from `/api/auth/config` at runtim
 
 ## Troubleshooting
 
-- **Google Sign-In is not configured:** enable the flag and provide a client ID, then restart locally or redeploy Vercel.
+- **Google Sign-In is not configured:** confirm `GOOGLE_OAUTH_CLIENT_ID` is assigned to the current Vercel environment, remove any `GOOGLE_AUTH_ENABLED=false` override, and redeploy. Then open `/api/auth/config` on the deployment and verify that it returns `googleAuthEnabled: true` and the expected client ID.
 - **The given origin is not allowed:** add the exact browser origin to the web client's Authorized JavaScript origins, wait a few minutes for Google configuration to propagate, and retry.
 - **Google identity could not be verified:** ensure the browser client ID and `GOOGLE_OAUTH_CLIENT_ID` are identical and that the credential comes from the configured Google project.
 - **Only test users can sign in:** add the Gmail account as a consent-screen test user or publish the application.
